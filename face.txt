@@ -1,0 +1,119 @@
+Um app React completo que analisa colorimetria pessoal por foto usando GPT-. O usuário envia a foto, a IA retorna uma cartela visual completa com estação cromática, paleta de cores, maquiagem, cabelo, metais e neutros. O resultado pode ser exportado emjpeg e pdf
+
+tenho a api key da open ia 
+
+vou passar o prompt
+
+Prompt copiável: "Analise minha foto para identificar minha colorimetria pessoal. Quero que você observe: subtom da pele contraste profundidade intensidade estação cromática mais provável Depois, entregue o resultado em formato visual de cartela personalizada, semelhante a uma consultoria profissional, mostrando: cartela provável cores que me valorizam cores que me apagam metais ideais melhores tons de cabelo maquiagem ideal neutros ideais Use a própria foto como referência principal e organize a resposta em layout visual bonito e fácil de salvar em imagem imagem pronta (tipo cartão para salvar no celular ou postar no Instagram) com sua cartela personalizada — no estilo profissional mesmo.
+análises de visagismo Até 1 análise de colorimetria Análise do formato do rosto Análise avançada da textura do cabelo e modelos de corte frente e costas
+
+Crie uma imagem em formato de infográfico premium (estilo consultoria de imagem pessoal), com layout elegante, moderno e altamente organizado.
+
+Use a foto enviada como base principal e mantenha o rosto fiel, natural e bem iluminado.
+
+ESTRUTURA DA IMAGEM:
+
+TÍTULO PRINCIPAL:
+"Sua Análise Completa de Imagem"
+
+SUBTÍTULO:
+"Visagismo • Colorimetria • Formato de Rosto • Cabelo"
+
+---
+
+1. VISAGISMO 
+Crie três blocos distintos com ícones minimalistas:
+
+• Harmonia facial:
+Analise proporções, simetria e equilíbrio dos traços
+
+• Expressão predominante:
+Descreva o que o rosto transmite (ex: leveza, confiança, simpatia, sofisticação)
+
+• Estilo pessoal (essência):
+Classifique em um estilo (ex: natural, elegante, clássico, moderno, sensual, criativo)
+
+Inclua pequenos textos explicativos e um “Resultado final” em cada bloco.
+
+---
+
+2. COLORIMETRIA PESSOAL (resumo visual)
+Inclua:
+
+• Estação cromática provável
+• Subtom da pele
+• Contraste
+• Profundidade
+• Intensidade
+
+Adicionar:
+
+• Paleta de cores que valorizam (em quadrados)
+• Paleta de cores que apagam
+• Metais ideais
+• Neutros ideais
+• Sugestão de maquiagem
+
+---
+
+3. FORMATO DO ROSTO
+Identifique o formato (oval, redondo, quadrado, etc.)
+
+Inclua:
+
+• Ilustração simples do formato
+• Características principais
+• Pontos fortes
+• O que mais valoriza (cortes, acessórios, etc.)
+
+---
+
+4. ANÁLISE AVANÇADA DO CABELO
+
+Crie uma seção técnica com:
+
+• Tipo de fio (ex: liso, ondulado 2A/2B/2C, cacheado)
+• Espessura
+• Densidade
+• Porosidade
+• Curvatura
+
+Adicionar:
+
+• Diagnóstico visual
+• Necessidades principais (hidratação, nutrição, definição, etc.)
+• Rotina ideal de cuidados
+• Finalizadores indicados
+
+---
+
+ESTILO VISUAL:
+
+• Estética clean, sofisticada e feminina
+• Paleta de cores neutra com tons quentes (bege, dourado, terracota)
+• Tipografia elegante (títulos serifados + textos clean)
+• Ícones minimalistas
+• Divisão clara em blocos tipo dashboard
+• Elementos visuais como:
+  - swatches de cores
+  - ícones de beleza
+  - linhas suaves
+  - caixas organizadas
+
+---
+
+QUALIDADE:
+
+• Alta resolução
+• Layout simétrico
+• Fácil de salvar e compartilhar (estilo Instagram / relatório premium)
+• Aparência de consultoria profissional de visagismo
+
+---
+
+IMPORTANTE:
+
+• Não distorcer o rosto
+• Manter aparência natural
+• Não exagerar filtros
+• Priorizar realismo + estética editorial

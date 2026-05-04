@@ -21,11 +21,14 @@ const ResultInfographic = ({ data, image }) => {
     const canvas = await html2canvas(element, { scale: 2, useCORS: true });
     const imgData = canvas.toDataURL('image/jpeg', 0.9);
     
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    // Configura o PDF para ter o tamanho exato da imagem gerada, assim não corta nada.
+    const pdf = new jsPDF({
+      orientation: canvas.width > canvas.height ? 'l' : 'p',
+      unit: 'px',
+      format: [canvas.width, canvas.height]
+    });
     
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
     pdf.save('consultoria-imagem.pdf');
   };
 
@@ -246,14 +249,14 @@ const ResultInfographic = ({ data, image }) => {
             {/* Footer Message */}
             <div className="poster-footer">
               <div className="pf-left">
-                <p className="pf-cursive">Você já tem tudo<br/>que precisa para brilhar! <Heart size={14} color="#8b4513" fill="#8b4513" /></p>
+                <p className="pf-cursive">Você já tem tudo que precisa para brilhar</p>
               </div>
               <div className="pf-center">
                 <p>Quando você usa as cores certas, sua beleza aparece com mais leveza, confiança e naturalidade.</p>
                 <strong>Seja sua melhor versão todos os dias!</strong>
               </div>
               <div className="pf-right">
-                <p><strong><Heart size={12} style={{display: 'inline', marginRight: '4px'}}/> LEMBRE-SE</strong></p>
+                <p><strong>LEMBRE-SE</strong></p>
                 <p>Não se trata de regras e sim de escolhas que te fazem bem e te representam.</p>
               </div>
             </div>

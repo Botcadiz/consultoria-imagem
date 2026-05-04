@@ -26,3 +26,5 @@ dist-ssr
 # Database and Secrets
 .env
 database.sqlite
+
+.vercel

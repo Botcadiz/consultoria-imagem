@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import OpenAI from 'openai';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { getDb } from './database.js';
+import { supabase } from './database.js';
 
 dotenv.config();
 
@@ -31,24 +31,24 @@ app.post('/api/register', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
 
-    const db = await getDb();
-    const existing = await db.get('SELECT id FROM users WHERE email = ?', [email]);
+    const { data: existing } = await supabase.from('users').select('id').eq('email', email).maybeSingle();
     if (existing) return res.status(400).json({ error: 'E-mail já cadastrado.' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword]);
+    const { error: insertError } = await supabase.from('users').insert([{ email, password: hashedPassword }]);
+    if (insertError) throw insertError;
     res.status(201).json({ message: 'Usuário registrado com sucesso.' });
   } catch (error) {
-    res.status(500).json({ error: 'Erro no servidor.' });
+    console.error("Erro no register:", error);
+    res.status(500).json({ error: 'Erro no servidor ao registrar.' });
   }
 });
 
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const db = await getDb();
     
-    const user = await db.get('SELECT * FROM users WHERE email = ?', [email]);
+    const { data: user } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
     if (!user) return res.status(400).json({ error: 'E-mail não encontrado.' });
 
     const validPassword = await bcrypt.compare(password, user.password);
@@ -57,20 +57,28 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, email: user.email });
   } catch (error) {
+    console.error("Erro no login:", error);
     res.status(500).json({ error: 'Erro no servidor.' });
   }
 });
 
 app.get('/api/history', authenticateToken, async (req, res) => {
   try {
-    const db = await getDb();
-    const history = await db.all('SELECT id, image_base64, result_json, created_at FROM history WHERE user_id = ? ORDER BY id DESC', [req.user.id]);
-    const formattedHistory = history.map(item => ({
+    const { data: history, error: historyError } = await supabase
+      .from('history')
+      .select('id, image_base64, result_json, created_at')
+      .eq('user_id', req.user.id)
+      .order('id', { ascending: false });
+      
+    if (historyError) throw historyError;
+
+    const formattedHistory = (history || []).map(item => ({
       ...item,
       result_json: JSON.parse(item.result_json)
     }));
     res.json(formattedHistory);
   } catch (error) {
+    console.error("Erro no histórico:", error);
     res.status(500).json({ error: 'Erro ao buscar histórico.' });
   }
 });
@@ -197,11 +205,12 @@ IMPORTANTE:
       resultData = JSON.parse(jsonStr);
       
       // Save to database
-      const db = await getDb();
-      await db.run(
-        'INSERT INTO history (user_id, image_base64, result_json) VALUES (?, ?, ?)',
-        [req.user.id, imageBase64, JSON.stringify(resultData)]
-      );
+      const { error: insertError } = await supabase.from('history').insert([{
+        user_id: req.user.id,
+        image_base64: imageBase64,
+        result_json: JSON.stringify(resultData)
+      }]);
+      if (insertError) throw insertError;
       
     } catch (parseError) {
       console.error("Erro ao fazer parse do JSON. Retorno da IA:", content);
@@ -216,6 +225,10 @@ IMPORTANTE:
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Backend rodando na porta ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Backend rodando na porta ${PORT}`);
+  });
+}
+
+export default app;

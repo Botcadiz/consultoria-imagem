@@ -1,7 +1,7 @@
 export const analyzeImage = async (imageBase64) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:3001/api/analyze', {
+    const response = await fetch('/api/analyze', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -19,8 +19,22 @@ function Analyzer() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage(reader.result);
-        setResult(null);
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const scaleSize = MAX_WIDTH / img.width;
+          canvas.width = MAX_WIDTH;
+          canvas.height = img.height * scaleSize;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          setImage(compressedBase64);
+          setResult(null);
+        };
+        img.src = reader.result;
       };
       reader.readAsDataURL(file);
     }
@@ -66,11 +80,11 @@ function Analyzer() {
         <div className="orb orb-3"></div>
       </div>
 
-      <nav className="navbar" style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginBottom: '2rem' }}>
+      <nav className="navbar" style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginBottom: '0.5rem' }}>
         <button onClick={() => navigate('/history')} className="btn btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}>
           <Clock size={16} /> Meu Histórico
         </button>
-        <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', borderColor: '#c62828', color: '#c62828' }}>
+        <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', padding: '0.5rem' }}>
           <LogOut size={16} /> Sair
         </button>
       </nav>
@@ -83,43 +97,46 @@ function Analyzer() {
 
       {!result && (
         <div className="analyzer-setup">
-          <div className="form-group">
-            <label>Sua Foto</label>
-            <div className="file-upload">
-              <input type="file" accept="image/*" onChange={handleImageChange} />
-              {image ? (
-                <div>
-                  <img src={image} alt="Preview" style={{ maxWidth: '100px', borderRadius: '8px', marginBottom: '10px' }} />
-                  <p>Foto selecionada. Clique para trocar.</p>
-                </div>
-              ) : (
-                <div>
-                  <Upload size={32} color="var(--color-primary)" style={{ marginBottom: '10px' }} />
-                  <p>Arraste uma foto ou clique para selecionar</p>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-                    Rosto bem iluminado, sem distorções
-                  </span>
-                </div>
-              )}
+          {loading ? (
+            <div className="loading-state" style={{ textAlign: 'center', padding: '2rem 0' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
+              <p style={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>Realizando análise profissional...</p>
+              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>A Inteligência Artificial está avaliando seus traços.</p>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="form-group">
+                <label>Sua Foto</label>
+                <div className="file-upload">
+                  <input type="file" accept="image/*" onChange={handleImageChange} />
+                  {image ? (
+                    <div>
+                      <img src={image} alt="Preview" style={{ maxHeight: '100px', width: 'auto', borderRadius: '8px', marginBottom: '10px' }} />
+                      <p>Foto selecionada. Clique para trocar.</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <Upload size={32} color="var(--color-primary)" style={{ marginBottom: '10px' }} />
+                      <p>Arraste uma foto ou clique para selecionar</p>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                        Rosto bem iluminado, sem distorções
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-          {error && <div style={{ color: '#d32f2f', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
+              {error && <div style={{ color: '#d32f2f', marginBottom: '1rem', fontSize: '0.9rem', textAlign: 'center' }}>{error}</div>}
 
-          <button 
-            className="btn btn-primary" 
-            onClick={handleAnalyze} 
-            disabled={loading || !image}
-          >
-            {loading ? 'Analisando...' : 'Analisar Imagem'}
-          </button>
-        </div>
-      )}
-
-      {loading && (
-        <div className="loading-state">
-          <div className="spinner"></div>
-          <p>Realizando análise profissional...</p>
+              <button 
+                className="btn btn-primary" 
+                onClick={handleAnalyze} 
+                disabled={!image}
+              >
+                Analisar Imagem
+              </button>
+            </>
+          )}
         </div>
       )}
 

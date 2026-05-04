@@ -17,7 +17,7 @@ export default function History() {
           return;
         }
 
-        const response = await fetch('http://localhost:3001/api/history', {
+        const response = await fetch('/api/history', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

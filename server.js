@@ -26,22 +26,6 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// ==================== TEST ====================
-app.get('/api/test', async (req, res) => {
-  try {
-    const r = await fetch(`${process.env.SUPABASE_URL}/rest/v1/users?select=id&limit=1`, {
-      headers: {
-        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-      }
-    });
-    const body = await r.text();
-    res.json({ status: r.status, body });
-  } catch (e) {
-    res.json({ fetchError: e.message, url: process.env.SUPABASE_URL });
-  }
-});
-
 // ==================== REGISTER ====================
 app.post('/api/register', async (req, res) => {
   try {
@@ -58,7 +42,7 @@ app.post('/api/register', async (req, res) => {
     res.status(201).json({ message: 'Usuário registrado com sucesso.' });
   } catch (error) {
     console.error('Erro no register:', error);
-    res.status(500).json({ error: 'Erro no servidor ao registrar.', detail: error?.message || String(error) });
+    res.status(500).json({ error: 'Erro no servidor ao registrar.' });
   }
 });
 

@@ -41,7 +41,15 @@ export default function Auth() {
   };
 
   return (
-    <div className="container" style={{ maxWidth: '400px', marginTop: '4rem' }}>
+    <div className="container" style={{ maxWidth: '400px', marginTop: '3rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: 'var(--color-text)', marginBottom: '0.4rem' }}>
+          Consultoria de <span style={{ color: 'var(--color-primary)' }}>Imagem Premium</span>
+        </h1>
+        <p style={{ fontSize: '0.75rem', letterSpacing: '0.15em', color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
+          Descubra sua colorimetria e visagismo ideais.
+        </p>
+      </div>
       <div className="analyzer-setup">
         <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', fontFamily: 'var(--font-serif)', color: 'var(--color-primary)' }}>
           {isLogin ? 'Entrar na Consultoria' : 'Criar Conta'}

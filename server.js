@@ -42,7 +42,7 @@ app.post('/api/register', async (req, res) => {
     res.status(201).json({ message: 'Usuário registrado com sucesso.' });
   } catch (error) {
     console.error('Erro no register:', error);
-    res.status(500).json({ error: 'Erro no servidor ao registrar.' });
+    res.status(500).json({ error: 'Erro no servidor ao registrar.', detail: error?.message || String(error) });
   }
 });
 

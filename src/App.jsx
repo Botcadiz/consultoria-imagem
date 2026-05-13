@@ -121,8 +121,8 @@ function Analyzer() {
       
       <div className="container">
         <div className="header">
-          <h1>Visagê</h1>
-          <p>Sua análise de imagem personalizada.</p>
+          <h1>Consultoria de Imagem Premium</h1>
+          <p>Descubra sua colorimetria e visagismo ideais.</p>
         </div>
 
       {!result && (

@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { Download, FileText, CheckCircle2, XCircle, Sun, Brush, Heart, User, Sparkles } from 'lucide-react';
+import { Download, FileText, CheckCircle2, XCircle, Sparkles, Heart } from 'lucide-react';
 
 const ResultInfographic = ({ data, image }) => {
   const printRef = useRef();
@@ -36,6 +36,26 @@ const ResultInfographic = ({ data, image }) => {
 
   const { colorimetria } = data;
 
+  // SVG for decorative leaf/botanical element
+  const LeafDecor = ({ className }) => (
+    <svg className={className} viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '80px', opacity: 0.4 }}>
+      <path d="M10 50C20 30 40 20 60 15C50 25 45 40 42 55" stroke="#b8c5b0" strokeWidth="1.5" fill="none"/>
+      <path d="M15 48C25 32 42 24 58 20C48 28 44 42 42 53" stroke="#c5d1be" strokeWidth="1" fill="none"/>
+      <path d="M60 15C70 10 85 12 95 20C80 18 70 25 65 35" stroke="#b8c5b0" strokeWidth="1.5" fill="none"/>
+      <path d="M42 55C45 45 50 35 60 30" stroke="#c5d1be" strokeWidth="1" fill="none"/>
+      <ellipse cx="60" cy="15" rx="3" ry="8" transform="rotate(-20 60 15)" fill="#d5ddd0" opacity="0.5"/>
+      <ellipse cx="30" cy="35" rx="5" ry="12" transform="rotate(15 30 35)" fill="#d5ddd0" opacity="0.3"/>
+      <ellipse cx="80" cy="22" rx="4" ry="10" transform="rotate(-30 80 22)" fill="#d5ddd0" opacity="0.3"/>
+    </svg>
+  );
+
+  // Sparkle/star SVG decoration
+  const StarDecor = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.35 }}>
+      <path d="M12 2L13.5 9.5L21 8L14.5 12L18 19L12 14.5L6 19L9.5 12L3 8L10.5 9.5L12 2Z" fill="#c5b89a" />
+    </svg>
+  );
+
   return (
     <div className="infographic-wrapper">
       <div className="export-actions">
@@ -57,10 +77,16 @@ const ResultInfographic = ({ data, image }) => {
             </div>
 
             <div className="sidebar-box">
-              <h3 className="sidebar-title"><Sparkles size={14} /> SUA ANÁLISE</h3>
+              <h3 className="sidebar-title"><Sparkles size={14} /> Sua Análise</h3>
               
+              {/* Subtom */}
               <div className="sidebar-item with-icon">
-                <div className="si-icon"><User size={24} color="#8b6b5c" strokeWidth={1.5} /></div>
+                <div className="si-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="#8b6b5c" strokeWidth="1.5"/>
+                    <path d="M12 6C12 6 8 10 8 14C8 16 10 18 12 18C14 18 16 16 16 14C16 10 12 6 12 6Z" fill="#e3c5b0" opacity="0.6"/>
+                  </svg>
+                </div>
                 <div className="si-content">
                   <h4>SUBTOM DA PELE</h4>
                   <strong>{colorimetria.subtom?.titulo || (typeof colorimetria.subtom === 'string' ? colorimetria.subtom : 'N/A')}</strong>
@@ -68,6 +94,7 @@ const ResultInfographic = ({ data, image }) => {
                 </div>
               </div>
 
+              {/* Contraste */}
               <div className="sidebar-item with-icon">
                 <div className="si-icon"><div className="icon-half-circle"></div></div>
                 <div className="si-content">
@@ -77,6 +104,7 @@ const ResultInfographic = ({ data, image }) => {
                 </div>
               </div>
 
+              {/* Profundidade */}
               <div className="sidebar-item with-icon">
                 <div className="si-icon"><div className="icon-gradient-circle"></div></div>
                 <div className="si-content">
@@ -86,8 +114,17 @@ const ResultInfographic = ({ data, image }) => {
                 </div>
               </div>
 
+              {/* Intensidade */}
               <div className="sidebar-item with-icon">
-                <div className="si-icon"><Sun size={24} color="#8b6b5c" strokeWidth={1.5} /></div>
+                <div className="si-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="5" fill="#e8d5c4" stroke="#8b6b5c" strokeWidth="1.5"/>
+                    <line x1="12" y1="2" x2="12" y2="6" stroke="#8b6b5c" strokeWidth="1.5" strokeLinecap="round"/>
+                    <line x1="12" y1="18" x2="12" y2="22" stroke="#8b6b5c" strokeWidth="1.5" strokeLinecap="round"/>
+                    <line x1="2" y1="12" x2="6" y2="12" stroke="#8b6b5c" strokeWidth="1.5" strokeLinecap="round"/>
+                    <line x1="18" y1="12" x2="22" y2="12" stroke="#8b6b5c" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </div>
                 <div className="si-content">
                   <h4>INTENSIDADE</h4>
                   <strong>{colorimetria.intensidade?.titulo || (typeof colorimetria.intensidade === 'string' ? colorimetria.intensidade : 'N/A')}</strong>
@@ -95,20 +132,19 @@ const ResultInfographic = ({ data, image }) => {
                 </div>
               </div>
 
+              {/* Estação Cromática highlight box */}
               <div className="sidebar-highlight-box">
                 <p className="sh-title">ESTAÇÃO CROMÁTICA</p>
                 <h2 className="sh-cursive">{colorimetria.estacaoCromatica}</h2>
                 <p className="sh-sub">{colorimetria.estacaoCromaticaSub || ''}</p>
-                <p className="sh-desc">{colorimetria.intensidade?.desc || colorimetria.descricaoEstacao}</p>
+                <p className="sh-desc">{colorimetria.descricaoEstacao}</p>
               </div>
 
+              {/* Seus Pontos Fortes */}
               {colorimetria.suaForca && (
                 <div className="sidebar-force-box">
-                  <p className="sf-title"><Heart size={14} /> SUA FORÇA</p>
+                  <p className="sf-title"><Heart size={14} /> SEUS PONTOS FORTES</p>
                   <strong>{colorimetria.suaForca?.titulo}</strong>
-                  <div className="sf-divider"></div>
-                  <p><strong>Evite:</strong> {colorimetria.suaForca?.evite}</p>
-                  <p style={{marginTop: '0.5rem'}}><strong>Aposte:</strong> {colorimetria.suaForca?.aposte}</p>
                 </div>
               )}
             </div>
@@ -164,7 +200,7 @@ const ResultInfographic = ({ data, image }) => {
               {/* Metais */}
               <div className="poster-box">
                 <h4 className="box-header"><Sparkles size={14} style={{marginRight: '4px'}}/> METAIS IDEAIS</h4>
-                <p className="box-desc" style={{fontSize: '0.7rem'}}>Metais quentes realçam seu brilho natural.</p>
+                <p className="box-desc" style={{fontSize: '0.7rem'}}>{colorimetria.dicaMetais || 'Metais que realçam seu brilho natural.'}</p>
                 <div className="metal-flex">
                   {colorimetria.metaisIdeais?.slice(0, 4).map((m, i) => (
                     <div key={i} className="metal-swatch-box">
@@ -173,17 +209,12 @@ const ResultInfographic = ({ data, image }) => {
                     </div>
                   ))}
                 </div>
-                {colorimetria.dicaMetais && (
-                  <div className="hair-tip-box">
-                    <p><strong>DICA:</strong> {colorimetria.dicaMetais}</p>
-                  </div>
-                )}
               </div>
 
               {/* Cabelo */}
               <div className="poster-box">
-                <h4 className="box-header"><User size={14} style={{marginRight: '4px'}}/> MELHORES TONS DE CABELO</h4>
-                <p className="box-desc" style={{fontSize: '0.7rem'}}>Tons quentes e dourados harmonizam e trazem luminosidade.</p>
+                <h4 className="box-header">✂ MELHORES TONS DE CABELO</h4>
+                <p className="box-desc" style={{fontSize: '0.7rem'}}>{colorimetria.dicaCabelo || 'Tons que harmonizam com sua beleza natural.'}</p>
                 <div className="hair-flex">
                   {colorimetria.melhoresTonsCabelo?.slice(0, 4).map((c, i) => (
                     <div key={i} className="hair-swatch-box">
@@ -192,40 +223,34 @@ const ResultInfographic = ({ data, image }) => {
                     </div>
                   ))}
                 </div>
-                {colorimetria.dicaCabelo && (
-                  <div className="hair-tip-box">
-                    <p><strong>DICA:</strong> {colorimetria.dicaCabelo}</p>
-                  </div>
-                )}
               </div>
 
               {/* Maquiagem */}
               <div className="poster-box">
-                <h4 className="box-header"><Brush size={14} style={{marginRight: '4px'}}/> MAQUIAGEM IDEAL</h4>
-                <p className="box-desc" style={{fontSize: '0.7rem'}}>Tons quentes e naturais realçam sua beleza de forma leve.</p>
+                <h4 className="box-header">✦ MAQUIAGEM IDEAL</h4>
                 <div className="makeup-list">
                   <div className="makeup-item">
-                    <div className="makeup-icon bg-base"></div>
+                    <div className="makeup-icon" style={{ background: colorimetria.maquiagemIdeal?.base?.hex || '#e5c298' }}></div>
                     <div className="makeup-text">
-                      <strong>BASE:</strong> {colorimetria.maquiagemIdeal?.base?.desc}
+                      <strong>BASE</strong><br/>{colorimetria.maquiagemIdeal?.base?.desc}
                     </div>
                   </div>
                   <div className="makeup-item">
-                    <div className="makeup-icon bg-blush"></div>
+                    <div className="makeup-icon" style={{ background: colorimetria.maquiagemIdeal?.blush?.hex || '#ffbfa3' }}></div>
                     <div className="makeup-text">
-                      <strong>BLUSH:</strong> {colorimetria.maquiagemIdeal?.blush?.desc}
+                      <strong>BLUSH</strong><br/>{colorimetria.maquiagemIdeal?.blush?.desc}
                     </div>
                   </div>
                   <div className="makeup-item">
-                    <div className="makeup-icon bg-batom"></div>
+                    <div className="makeup-icon" style={{ background: colorimetria.maquiagemIdeal?.batom?.hex || '#c87669' }}></div>
                     <div className="makeup-text">
-                      <strong>BATOM:</strong> {colorimetria.maquiagemIdeal?.batom?.desc}
+                      <strong>BATOM</strong><br/>{colorimetria.maquiagemIdeal?.batom?.desc}
                     </div>
                   </div>
                   <div className="makeup-item">
-                    <div className="makeup-icon bg-sombras"></div>
+                    <div className="makeup-icon" style={{ background: colorimetria.maquiagemIdeal?.sombras?.hex || '#b87333' }}></div>
                     <div className="makeup-text">
-                      <strong>SOMBRAS:</strong> {colorimetria.maquiagemIdeal?.sombras?.desc}
+                      <strong>SOMBRAS</strong><br/>{colorimetria.maquiagemIdeal?.sombras?.desc}
                     </div>
                   </div>
                 </div>
@@ -235,7 +260,6 @@ const ResultInfographic = ({ data, image }) => {
             {/* Neutros */}
             <div className="poster-section" style={{marginTop: '1.5rem'}}>
               <div className="section-divider"><span>NEUTROS IDEAIS</span></div>
-              <p className="box-desc" style={{textAlign: 'center', marginBottom: '1rem'}}>Neutros quentes e suaves criam harmonia e elegância.</p>
               <div className="cartela-grid-8">
                 {colorimetria.neutrosIdeais?.slice(0, 8).map((c, i) => (
                   <div key={i} className="color-swatch-box">
@@ -246,18 +270,19 @@ const ResultInfographic = ({ data, image }) => {
               </div>
             </div>
 
-            {/* Footer Message */}
+            {/* Footer Message — matching reference exactly */}
             <div className="poster-footer">
-              <div className="pf-left">
-                <p className="pf-cursive">Você já tem tudo que precisa para brilhar</p>
+              <div className="pf-decor-left">
+                <LeafDecor />
               </div>
-              <div className="pf-center">
-                <p>Quando você usa as cores certas, sua beleza aparece com mais leveza, confiança e naturalidade.</p>
-                <strong>Seja sua melhor versão todos os dias!</strong>
+              <div className="pf-main">
+                <p className="pf-cursive-msg">
+                  Quando você usa as cores certas,<br/>
+                  sua beleza aparece com mais leveza, harmonia e autenticidade.
+                </p>
               </div>
-              <div className="pf-right">
-                <p><strong>LEMBRE-SE</strong></p>
-                <p>Não se trata de regras e sim de escolhas que te fazem bem e te representam.</p>
+              <div className="pf-decor-right">
+                <StarDecor /> <StarDecor />
               </div>
             </div>
 

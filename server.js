@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import OpenAI from 'openai';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { supabase } from './database.js';
+import db from './database.js';
 
 dotenv.config();
 
@@ -26,17 +26,19 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+// ==================== REGISTER ====================
 app.post('/api/register', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
 
-    const { data: existing } = await supabase.from('users').select('id').eq('email', email).maybeSingle();
+    // Check if user already exists
+    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
     if (existing) return res.status(400).json({ error: 'E-mail já cadastrado.' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const { error: insertError } = await supabase.from('users').insert([{ email, password: hashedPassword }]);
-    if (insertError) throw insertError;
+    db.prepare('INSERT INTO users (email, password) VALUES (?, ?)').run(email, hashedPassword);
+
     res.status(201).json({ message: 'Usuário registrado com sucesso.' });
   } catch (error) {
     console.error("Erro no register:", error);
@@ -44,16 +46,18 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
+// ==================== LOGIN ====================
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     
-    const { data: user } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
+    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
     if (!user) return res.status(400).json({ error: 'E-mail não encontrado.' });
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return res.status(400).json({ error: 'Senha incorreta.' });
 
+    // Token includes user id and email — used for data isolation
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, email: user.email });
   } catch (error) {
@@ -62,15 +66,13 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// ==================== HISTORY (user-isolated) ====================
 app.get('/api/history', authenticateToken, async (req, res) => {
   try {
-    const { data: history, error: historyError } = await supabase
-      .from('history')
-      .select('id, image_base64, result_json, created_at')
-      .eq('user_id', req.user.id)
-      .order('id', { ascending: false });
-      
-    if (historyError) throw historyError;
+    // Only returns history for the authenticated user (req.user.id)
+    const history = db.prepare(
+      'SELECT id, image_base64, result_json, created_at FROM history WHERE user_id = ? ORDER BY id DESC'
+    ).all(req.user.id);
 
     const formattedHistory = (history || []).map(item => ({
       ...item,
@@ -83,6 +85,18 @@ app.get('/api/history', authenticateToken, async (req, res) => {
   }
 });
 
+// ==================== GENERATION COUNT ====================
+app.get('/api/generation-count', authenticateToken, (req, res) => {
+  try {
+    const row = db.prepare('SELECT COUNT(*) as count FROM history WHERE user_id = ?').get(req.user.id);
+    res.json({ count: row.count });
+  } catch (error) {
+    console.error('Erro ao buscar contagem:', error);
+    res.status(500).json({ error: 'Erro ao buscar contagem.' });
+  }
+});
+
+// ==================== ANALYZE (with OpenAI) ====================
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -178,7 +192,7 @@ IMPORTANTE:
 5. Retorne APENAS o JSON válido, sem NENHUM texto antes ou depois, sem formatação markdown.`;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4o',
       response_format: { type: "json_object" },
       messages: [
         {
@@ -189,13 +203,13 @@ IMPORTANTE:
               type: 'image_url',
               image_url: {
                 url: imageBase64,
-                detail: 'high'
+                detail: 'low'
               },
             },
           ],
         },
       ],
-      max_tokens: 2000,
+      max_tokens: 4096,
     });
 
     const content = response.choices[0].message.content;
@@ -204,13 +218,10 @@ IMPORTANTE:
       const jsonStr = content.replace(/```json/g, '').replace(/```/g, '').trim();
       resultData = JSON.parse(jsonStr);
       
-      // Save to database
-      const { error: insertError } = await supabase.from('history').insert([{
-        user_id: req.user.id,
-        image_base64: imageBase64,
-        result_json: JSON.stringify(resultData)
-      }]);
-      if (insertError) throw insertError;
+      // Save to database — associated with the authenticated user
+      db.prepare(
+        'INSERT INTO history (user_id, image_base64, result_json) VALUES (?, ?, ?)'
+      ).run(req.user.id, imageBase64, JSON.stringify(resultData));
       
     } catch (parseError) {
       console.error("Erro ao fazer parse do JSON. Retorno da IA:", content);
@@ -220,7 +231,8 @@ IMPORTANTE:
     res.json(resultData);
   } catch (error) {
     console.error("Erro na análise:", error.message || error);
-    res.status(500).json({ error: 'Erro ao processar imagem no backend.' });
+    const detail = error?.error?.message || error.message || 'Erro desconhecido';
+    res.status(500).json({ error: `Erro ao processar imagem: ${detail}` });
   }
 });
 

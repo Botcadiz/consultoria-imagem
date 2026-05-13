@@ -4,7 +4,7 @@ import ResultInfographic from './components/ResultInfographic';
 import Auth from './components/Auth';
 import History from './components/History';
 import { analyzeImage } from './openaiService';
-import { Upload, LogOut, Clock } from 'lucide-react';
+import { Upload, LogOut, Clock, Sparkles } from 'lucide-react';
 import './index.css';
 
 function Analyzer() {
@@ -12,7 +12,27 @@ function Analyzer() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [generationCount, setGenerationCount] = useState(0);
   const navigate = useNavigate();
+
+  const fetchGenerationCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/generation-count', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setGenerationCount(data.count);
+      }
+    } catch (e) {
+      console.error('Erro ao buscar contagem:', e);
+    }
+  };
+
+  useEffect(() => {
+    fetchGenerationCount();
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -52,12 +72,13 @@ function Analyzer() {
     try {
       const data = await analyzeImage(image);
       setResult(data);
+      setGenerationCount(prev => prev + 1);
     } catch (err) {
       if (err.message.includes('401') || err.message.includes('403')) {
         localStorage.removeItem('token');
         navigate('/auth');
       } else {
-        setError('Ocorreu um erro na análise. Verifique o servidor e tente novamente.');
+        setError(err.serverMessage || 'Ocorreu um erro na análise. Verifique o servidor e tente novamente.');
       }
       console.error(err);
     } finally {
@@ -80,13 +101,22 @@ function Analyzer() {
         <div className="orb orb-3"></div>
       </div>
 
-      <nav className="navbar" style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginBottom: '0.5rem' }}>
-        <button onClick={() => navigate('/history')} className="btn btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}>
-          <Clock size={16} /> Meu Histórico
-        </button>
-        <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', padding: '0.5rem' }}>
-          <LogOut size={16} /> Sair
-        </button>
+      <nav className="navbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+        {/* Generation Counter */}
+        <div className="generation-counter">
+          <Sparkles size={16} />
+          <span className="gen-count">{generationCount}</span>
+          <span className="gen-label">análise{generationCount !== 1 ? 's' : ''} gerada{generationCount !== 1 ? 's' : ''}</span>
+        </div>
+
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <button onClick={() => navigate('/history')} className="btn btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}>
+            <Clock size={16} /> Meu Histórico
+          </button>
+          <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', padding: '0.5rem' }}>
+            <LogOut size={16} /> Sair
+          </button>
+        </div>
       </nav>
       
       <div className="container">

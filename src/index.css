@@ -1022,7 +1022,7 @@ h1, h2, h3, h4, h5, h6 {
    ========================================= */
 
 .poster-infographic {
-  background: #fcf9f2;
+  background: linear-gradient(180deg, #fdfaf5 0%, #f8f2ed 40%, #faf6f2 100%);
   color: #2e1a10;
   font-family: var(--font-sans);
   padding: 3rem 2rem;
@@ -1030,6 +1030,27 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 auto;
   border-radius: 8px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle decorative gradient overlay for cheerful feel */
+.poster-infographic::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(200, 170, 220, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.poster-infographic::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, rgba(180, 210, 180, 0.08) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .poster-header {
@@ -1039,18 +1060,19 @@ h1, h2, h3, h4, h5, h6 {
 
 .poster-super-title {
   font-family: var(--font-sans);
-  font-size: 0.9rem;
-  letter-spacing: 0.2em;
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: #4a2c17;
+  color: #9b7e9b;
   margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .poster-title {
   font-family: var(--font-serif);
   font-size: 3.5rem;
-  color: #2e1a10;
-  font-weight: 600;
+  color: #3b2828;
+  font-weight: 700;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -1059,12 +1081,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .poster-cursive {
-  font-family: 'Dancing Script', cursive;
-  font-size: 1.9rem;
-  font-weight: 600;
-  color: #4a2c17;
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 400;
+  font-style: italic;
+  color: #8c6d7a;
   margin-bottom: 1.5rem;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
 }
 
 .poster-layout {
@@ -1269,16 +1292,18 @@ h1, h2, h3, h4, h5, h6 {
 .section-divider {
   text-align: center;
   position: relative;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .section-divider::before {
-  content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1px; background: #eadecc; z-index: 1;
+  content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, #d8c8d8, #eadecc, #d8c8d8, transparent);
+  z-index: 1;
 }
 
 .section-divider span {
-  position: relative; z-index: 2; background: #fcf9f2; padding: 0 1rem; font-family: var(--font-serif);
-  font-size: 1.1rem; color: #2e1a10; text-transform: uppercase; font-weight: 600;
+  position: relative; z-index: 2; background: #faf6f2; padding: 0 1.25rem; font-family: var(--font-serif);
+  font-size: 1.1rem; color: #5a3e5a; text-transform: uppercase; font-weight: 600; letter-spacing: 0.08em;
 }
 
 .cartela-grid-12 {
@@ -1331,13 +1356,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .success-box {
-  background: #f4f8f4;
-  border-color: #d1dfd1;
+  background: linear-gradient(135deg, #f0f6f0 0%, #f4f8f4 100%);
+  border-color: #c5ddc5;
 }
 
 .danger-box {
-  background: #fdf5f5;
-  border-color: #f1d6d6;
+  background: linear-gradient(135deg, #fdf3f3 0%, #fdf5f5 100%);
+  border-color: #ecc8c8;
 }
 
 .box-header {
@@ -1444,34 +1469,81 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
 }
 
+/* Poster Footer — Cheerful & Legible */
 .poster-footer {
-  display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 1.5rem; background: #fdfbf7; border: 1px solid #eadecc; border-radius: 12px; gap: 2rem; margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.75rem 2.5rem;
+  background: linear-gradient(135deg, #fdfbf7 0%, #f8f0f4 50%, #f5f5fa 100%);
+  border: 1px solid #e4d6e0;
+  border-radius: 16px;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  text-align: center;
 }
 
-.pf-left {
-  flex: 1;
+.pf-decor-left, .pf-decor-right {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  border-right: 1px solid #eadecc;
-  padding-right: 1.5rem;
+  gap: 0.25rem;
+  opacity: 0.5;
 }
 
-.pf-cursive {
-  font-family: var(--font-serif); font-size: 1.15rem; color: #2e1a10; line-height: 1.5; font-weight: 600; font-style: italic;
+.pf-main {
+  flex: 1;
 }
 
-.pf-center {
-  flex: 2; font-size: 0.82rem; color: #3d2a22; text-align: center; font-weight: 500; line-height: 1.5;
+.pf-cursive-msg {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+  font-style: italic;
+  color: #4a3040;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
 }
 
-.pf-center strong {
-  display: block; margin-top: 0.4rem; color: #2e1a10; font-weight: 700; font-size: 0.85rem;
+/* =========================================
+   GENERATION COUNTER
+   ========================================= */
+.generation-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 30px;
+  padding: 0.4rem 1rem 0.4rem 0.75rem;
+  color: var(--color-primary);
+  animation: counterGlow 3s ease-in-out infinite alternate;
 }
 
-.pf-right {
-  flex: 1; font-size: 0.8rem; color: #3d2a22; font-weight: 500; border-left: 1px solid #eadecc; padding-left: 1.5rem;
+.generation-counter svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
-.pf-right strong {
-  color: #4a2c17; display: block; margin-bottom: 0.3rem; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+.gen-count {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1;
+  min-width: 1.2em;
+  text-align: center;
+}
+
+.gen-label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@keyframes counterGlow {
+  0% { box-shadow: 0 0 8px rgba(212, 175, 55, 0.1); }
+  100% { box-shadow: 0 0 16px rgba(212, 175, 55, 0.25); }
 }

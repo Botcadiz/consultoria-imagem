@@ -82,12 +82,12 @@ export default function Auth() {
 
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem' }}>
           {isLogin ? 'Não tem conta? ' : 'Já tem conta? '}
-          <button 
-            type="button" 
-            onClick={() => setIsLogin(!isLogin)} 
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
             style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 'bold' }}
           >
-            {isLogin ? 'Cadastre-se' : 'Faça login'}
+            {isLogin ? 'Criar conta' : 'Fazer login'}
           </button>
         </p>
       </div>

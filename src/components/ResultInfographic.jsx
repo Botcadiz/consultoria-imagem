@@ -83,8 +83,8 @@ const ResultInfographic = ({ data, image }) => {
               <div className="sidebar-item with-icon">
                 <div className="si-icon">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="#8b6b5c" strokeWidth="1.5"/>
-                    <path d="M12 6C12 6 8 10 8 14C8 16 10 18 12 18C14 18 16 16 16 14C16 10 12 6 12 6Z" fill="#e3c5b0" opacity="0.6"/>
+                    <circle cx="12" cy="12" r="10" stroke="#d4af37" strokeWidth="1.5"/>
+                    <path d="M12 6C12 6 8 10 8 14C8 16 10 18 12 18C14 18 16 16 16 14C16 10 12 6 12 6Z" fill="#d4af37" opacity="0.55"/>
                   </svg>
                 </div>
                 <div className="si-content">
@@ -118,11 +118,11 @@ const ResultInfographic = ({ data, image }) => {
               <div className="sidebar-item with-icon">
                 <div className="si-icon">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="5" fill="#e8d5c4" stroke="#8b6b5c" strokeWidth="1.5"/>
-                    <line x1="12" y1="2" x2="12" y2="6" stroke="#8b6b5c" strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="12" y1="18" x2="12" y2="22" stroke="#8b6b5c" strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="2" y1="12" x2="6" y2="12" stroke="#8b6b5c" strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="18" y1="12" x2="22" y2="12" stroke="#8b6b5c" strokeWidth="1.5" strokeLinecap="round"/>
+                    <circle cx="12" cy="12" r="5" fill="#d4af37" fillOpacity="0.55" stroke="#d4af37" strokeWidth="1.5"/>
+                    <line x1="12" y1="2" x2="12" y2="6" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round"/>
+                    <line x1="12" y1="18" x2="12" y2="22" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round"/>
+                    <line x1="2" y1="12" x2="6" y2="12" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round"/>
+                    <line x1="18" y1="12" x2="22" y2="12" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
                 </div>
                 <div className="si-content">
@@ -157,7 +157,9 @@ const ResultInfographic = ({ data, image }) => {
             <div className="poster-header">
               <p className="poster-super-title">SUA COLORIMETRIA PESSOAL</p>
               <h1 className="poster-title">{colorimetria.estacaoCromatica}</h1>
-              <p className="poster-cursive">{colorimetria.descricaoEstacao}</p>
+              <div style={{textAlign:'center'}}>
+                <p className="poster-cursive">{colorimetria.descricaoEstacao}</p>
+              </div>
             </div>
 
             {/* Cartela Ideal */}
@@ -176,7 +178,7 @@ const ResultInfographic = ({ data, image }) => {
             {/* Valorizam e Apagam */}
             <div className="poster-split-section">
               <div className="poster-box success-box">
-                <h4 className="box-header"><CheckCircle2 size={16} color="#4a7c59" /> CORES QUE TE VALORIZAM</h4>
+                <h4 className="box-header"><CheckCircle2 size={16} color="#7ac479" /> CORES QUE TE VALORIZAM</h4>
                 <p className="box-desc">{colorimetria.coresValorizam?.desc}</p>
                 <div className="mini-swatch-grid">
                   {colorimetria.coresValorizam?.cores?.slice(0, 10).map((c, i) => (
@@ -185,7 +187,7 @@ const ResultInfographic = ({ data, image }) => {
                 </div>
               </div>
               <div className="poster-box danger-box">
-                <h4 className="box-header"><XCircle size={16} color="#c64f4f" /> CORES QUE TE APAGAM</h4>
+                <h4 className="box-header"><XCircle size={16} color="#ff6b6b" /> CORES QUE TE APAGAM</h4>
                 <p className="box-desc">{colorimetria.coresApagam?.desc}</p>
                 <div className="mini-swatch-grid opacity-swatch">
                   {colorimetria.coresApagam?.cores?.slice(0, 10).map((c, i) => (
@@ -270,19 +272,23 @@ const ResultInfographic = ({ data, image }) => {
               </div>
             </div>
 
-            {/* Footer Message — matching reference exactly */}
+            {/* Footer Message — three-column layout */}
             <div className="poster-footer">
               <div className="pf-decor-left">
-                <LeafDecor />
+                Você já tem tudo<br/>que precisa para brilhar!
               </div>
               <div className="pf-main">
                 <p className="pf-cursive-msg">
                   Quando você usa as cores certas,<br/>
-                  sua beleza aparece com mais leveza, harmonia e autenticidade.
+                  sua beleza aparece com mais leveza, confiança e naturalidade.
+                  <strong>Seja sua melhor versão todos os dias!</strong>
                 </p>
               </div>
               <div className="pf-decor-right">
-                <StarDecor /> <StarDecor />
+                <div className="pf-remember-title"><Heart size={14} fill="#d4af37" /> LEMBRE-SE</div>
+                <div className="pf-remember-text">
+                  Não se trata de regras e sim de escolhas que te fazem bem e te representam.
+                </div>
               </div>
             </div>
 

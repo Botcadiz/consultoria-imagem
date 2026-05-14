@@ -1023,15 +1023,15 @@ h1, h2, h3, h4, h5, h6 {
    ========================================= */
 
 .poster-infographic {
-  background: linear-gradient(180deg, #0a0a0a 0%, #141414 50%, #0a0a0a 100%);
-  color: #f5f5f5;
+  background: linear-gradient(180deg, #f5f1e8 0%, #efe8dd 50%, #f5f1e8 100%);
+  color: #3d3d3d;
   font-family: var(--font-sans);
   padding: 3rem 2rem;
   max-width: 1000px;
   margin: 0 auto;
   border-radius: 8px;
   border: 1px solid rgba(212, 175, 55, 0.35);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(212, 175, 55, 0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 40px rgba(212, 175, 55, 0.12);
   position: relative;
   overflow: hidden;
 }
@@ -1144,8 +1144,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar-box {
-  background: linear-gradient(160deg, #1a1a1a 0%, #141414 100%);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: linear-gradient(160deg, #f9f5ed 0%, #f5f1e8 100%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 10px;
   padding: 1.5rem 1.25rem;
 }
@@ -1226,7 +1226,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .si-content strong {
   font-size: 0.95rem;
-  color: #f5f5f5;
+  color: #3d3d3d;
   display: block;
   margin-bottom: 0.2rem;
   font-weight: 600;
@@ -1234,7 +1234,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .si-content p {
   font-size: 0.78rem;
-  color: #b8b8b8;
+  color: #6b6b6b;
   line-height: 1.45;
   font-weight: 400;
 }
@@ -1275,7 +1275,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .sh-sub {
   font-size: 0.8rem;
-  color: #f3e5ab;
+  color: #6b6b6b;
   margin-bottom: 0.75rem;
   font-weight: 400;
   font-style: italic;
@@ -1366,7 +1366,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-divider span {
-  position: relative; z-index: 2; background: #0f0f0f; padding: 0 1.5rem; font-family: var(--font-luxury);
+  position: relative; z-index: 2; background: #f5f1e8; padding: 0 1.5rem; font-family: var(--font-luxury);
   font-size: 0.95rem; color: #d4af37; text-transform: uppercase; font-weight: 600; letter-spacing: 0.2em;
 }
 
@@ -1414,19 +1414,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .poster-box {
-  background: linear-gradient(160deg, #1a1a1a 0%, #141414 100%);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: linear-gradient(160deg, #f9f5ed 0%, #f5f1e8 100%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 10px;
   padding: 1.25rem;
 }
 
 .success-box {
-  background: linear-gradient(160deg, rgba(46, 110, 60, 0.18) 0%, rgba(20, 20, 20, 0.8) 100%);
+  background: linear-gradient(160deg, rgba(122, 168, 114, 0.1) 0%, rgba(245, 241, 232, 0.8) 100%);
   border-color: rgba(122, 168, 114, 0.4);
 }
 
 .danger-box {
-  background: linear-gradient(160deg, rgba(150, 50, 50, 0.18) 0%, rgba(20, 20, 20, 0.8) 100%);
+  background: linear-gradient(160deg, rgba(192, 120, 112, 0.1) 0%, rgba(245, 241, 232, 0.8) 100%);
   border-color: rgba(192, 120, 112, 0.4);
 }
 
@@ -1438,7 +1438,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .box-desc {
-  font-size: 0.78rem; color: #c0c0c0; margin-bottom: 1rem; line-height: 1.45; font-weight: 400;
+  font-size: 0.78rem; color: #6b6b6b; margin-bottom: 1rem; line-height: 1.45; font-weight: 400;
 }
 
 .mini-swatch-grid {
@@ -1504,7 +1504,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 8px;
   margin-top: 1rem;
   font-size: 0.72rem;
-  color: #c0c0c0;
+  color: #6b6b6b;
   line-height: 1.4;
 }
 
@@ -1533,7 +1533,7 @@ h1, h2, h3, h4, h5, h6 {
 .bg-sombras { background: #b87333; }
 
 .makeup-text {
-  font-size: 0.72rem; color: #c0c0c0; line-height: 1.35; font-weight: 400;
+  font-size: 0.72rem; color: #6b6b6b; line-height: 1.35; font-weight: 400;
 }
 
 .makeup-text strong {
@@ -1588,7 +1588,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .pf-decor-right .pf-remember-text {
-  font-size: 0.75rem; color: #c0c0c0; line-height: 1.45;
+  font-size: 0.75rem; color: #6b6b6b; line-height: 1.45;
 }
 
 .pf-main {

@@ -111,87 +111,100 @@ app.post('/api/analyze', authenticateToken, async (req, res) => {
     const { imageBase64 } = req.body;
     if (!imageBase64) return res.status(400).json({ error: 'Nenhuma imagem enviada.' });
 
-    const prompt = `Você é um consultor de imagem e visagismo premium. Analise a foto da pessoa e retorne uma resposta no formato JSON estrito, sem markdown ou texto extra.
+    const prompt = `VOCÊ É UM CONSULTOR DE IMAGEM E VISAGISMO PREMIUM.
 
-Use a seguinte estrutura de JSON:
+Sua tarefa: Analise a foto do rosto desta pessoa e crie uma consultoria personalizada de colorimetria e visagismo.
+
+ANÁLISE DETALHADA BASEADA NA FOTO:
+1. Observe CUIDADOSAMENTE a pele, tom natural, luminosidade, contraste com cabelo e olhos
+2. Identifique a estação cromática (Primavera, Verão, Outono, Inverno e suas variações)
+3. Analise subtom, contraste, profundidade e intensidade das cores naturais
+4. Determine as cores que mais a favorecem e as que apagam
+5. Personalize completamente cada recomendação conforme SUAS características únicas
+
+RETORNE APENAS JSON VÁLIDO, sem markdown, sem texto extra:
+
 {
   "visagismo": {
-    "harmoniaFacial": { "descricao": "Descreva a harmonia e proporção...", "resultado": "ex: harmonia boa" },
-    "expressaoPredominante": { "descricao": "O que o rosto transmite...", "resultado": "ex: amigável e acolhedora" },
-    "estiloPessoal": { "descricao": "A essência transmitida...", "resultado": "ex: natural clássica" },
-    "personalidadeVisagismo": "Descreva as características de temperamento e personalidade que os traços faciais sugerem detalhadamente..."
+    "harmoniaFacial": { "descricao": "descrição real observada", "resultado": "resultado específico" },
+    "expressaoPredominante": { "descricao": "O que o rosto transmite", "resultado": "resultado específico" },
+    "estiloPessoal": { "descricao": "Essência visual", "resultado": "resultado específico" },
+    "personalidadeVisagismo": "Características detalhadas de temperamento baseadas nos traços faciais..."
   },
   "colorimetria": {
-    "estacaoCromatica": "ex: OUTONO QUENTE",
-    "estacaoCromaticaSub": "ex: (Outono Puro)",
-    "descricaoEstacao": "Breve frase com fonte cursiva, ex: Sua beleza em harmonia com cores quentes e naturais",
-    "subtom": { "titulo": "Quente", "desc": "Explique detalhadamente o subtom da pessoa com base nas características da pele dela..." },
-    "contraste": { "titulo": "Médio", "desc": "Explique detalhadamente o nível de contraste pessoal observando a cor da pele, olhos e cabelo dela..." },
-    "profundidade": { "titulo": "Média", "desc": "Explique detalhadamente a profundidade observando o nível de claro/escuro dos traços dela..." },
-    "intensidade": { "titulo": "Levemente suave", "desc": "Explique detalhadamente se a beleza dela pede cores vivas ou suaves e por quê..." },
-    "suaForca": { "titulo": "Calor + Naturalidade + Harmonia Suave", "evite": "extremos frios e contrastes muito duros.", "aposte": "tons terrosos, dourados e naturais." },
+    "estacaoCromatica": "ESTAÇÃO CROMÁTICA IDENTIFICADA",
+    "estacaoCromaticaSub": "(Variação específica)",
+    "descricaoEstacao": "Frase única e personalizada que descreve a harmonia cromática desta pessoa",
+    "subtom": { "titulo": "Resultado específico", "desc": "Análise detalhada baseada na pele observada" },
+    "contraste": { "titulo": "Nível específico", "desc": "Análise baseada em pele, cabelo e olhos observados" },
+    "profundidade": { "titulo": "Nível específico", "desc": "Análise baseada em claro/escuro dos traços observados" },
+    "intensidade": { "titulo": "Tipo específico", "desc": "Se pede cores vivas ou suaves, análise personalizada" },
+    "suaForca": { "titulo": "3-4 características principais", "evite": "O que evitar", "aposte": "Em que apostar" },
     "cartelaIdeal": [
-      {"nome": "Mostarda", "hex": "#e3a830"}, {"nome": "Terracota", "hex": "#c65d41"},
-      {"nome": "Verde Oliva", "hex": "#6b7045"}, {"nome": "Caramelo", "hex": "#c88550"},
-      {"nome": "Coral Quente", "hex": "#ff7f50"}, {"nome": "Vermelho Queimado", "hex": "#8b0000"},
-      {"nome": "Dourado", "hex": "#ffd700"}, {"nome": "Cobre", "hex": "#b87333"},
-      {"nome": "Marrom", "hex": "#8b4513"}, {"nome": "Pêssego", "hex": "#ffe5b4"},
-      {"nome": "Ameixa", "hex": "#dda0dd"}, {"nome": "Verde Musgo", "hex": "#add8e6"}
+      {"nome": "Cor 1", "hex": "#hex"}, {"nome": "Cor 2", "hex": "#hex"},
+      {"nome": "Cor 3", "hex": "#hex"}, {"nome": "Cor 4", "hex": "#hex"},
+      {"nome": "Cor 5", "hex": "#hex"}, {"nome": "Cor 6", "hex": "#hex"},
+      {"nome": "Cor 7", "hex": "#hex"}, {"nome": "Cor 8", "hex": "#hex"},
+      {"nome": "Cor 9", "hex": "#hex"}, {"nome": "Cor 10", "hex": "#hex"},
+      {"nome": "Cor 11", "hex": "#hex"}, {"nome": "Cor 12", "hex": "#hex"}
     ],
-    "coresValorizam": {"desc": "Cores quentes, terrosas e naturais iluminam sua pele.", "cores": ["#hex1", "#hex2", "#hex3", "#hex4", "#hex5", "#hex6", "#hex7", "#hex8", "#hex9", "#hex10"]},
-    "coresApagam": {"desc": "Cores frias, acinzentadas e de alto contraste quebram sua harmonia.", "cores": ["#hex1", "#hex2", "#hex3", "#hex4", "#hex5", "#hex6", "#hex7", "#hex8", "#hex9", "#hex10"]},
+    "coresValorizam": {"desc": "Descrição personalizada", "cores": ["#hex1", "#hex2", "#hex3", "#hex4", "#hex5", "#hex6", "#hex7", "#hex8", "#hex9", "#hex10"]},
+    "coresApagam": {"desc": "Descrição personalizada", "cores": ["#hex1", "#hex2", "#hex3", "#hex4", "#hex5", "#hex6", "#hex7", "#hex8", "#hex9", "#hex10"]},
     "metaisIdeais": [
-      {"nome": "Ouro", "hex": "#ffd700"}, {"nome": "Ouro Rosé", "hex": "#b76e79"}, {"nome": "Cobre", "hex": "#b87333"}
+      {"nome": "Metal 1", "hex": "#hex"}, {"nome": "Metal 2", "hex": "#hex"}, {"nome": "Metal 3", "hex": "#hex"}
     ],
-    "dicaMetais": "ex: Use esses tons também em óculos, relógios e fivelas de bolsas para manter a harmonia perto do rosto.",
+    "dicaMetais": "Dica específica sobre como usar os metais ideais",
     "melhoresTonsCabelo": [
-      {"nome": "Castanho Dourado", "hex": "#8b5a2b"}, {"nome": "Caramelo", "hex": "#c68e59"}, {"nome": "Mel", "hex": "#e3a830"}, {"nome": "Chocolate", "hex": "#8b4513"}
+      {"nome": "Tom 1", "hex": "#hex"}, {"nome": "Tom 2", "hex": "#hex"}, {"nome": "Tom 3", "hex": "#hex"}, {"nome": "Tom 4", "hex": "#hex"}
     ],
-    "dicaCabelo": "ex: prefira luzes e reflexos quentes (mel, caramelo). Evite platinados frios.",
+    "dicaCabelo": "Dica específica e personalizada sobre tons de cabelo que favorecem",
     "maquiagemIdeal": {
-      "base": {"desc": "fundo amarelado ou dourado", "hex": "#e5c298"},
-      "blush": {"desc": "pêssego, coral ou terracota", "hex": "#ffbfa3"},
-      "batom": {"desc": "nude quente, terracota, coral", "hex": "#c87669"},
-      "sombras": {"desc": "dourado, cobre, bronze", "hex": "#b87333"}
+      "base": {"desc": "Descrição específica", "hex": "#hex"},
+      "blush": {"desc": "Descrição específica", "hex": "#hex"},
+      "batom": {"desc": "Descrição específica", "hex": "#hex"},
+      "sombras": {"desc": "Descrição específica", "hex": "#hex"}
     },
     "neutrosIdeais": [
-      {"nome": "Bege Quente", "hex": "#f5f5dc"}, {"nome": "Creme", "hex": "#fffdd0"},
-      {"nome": "Areia", "hex": "#c2b280"}, {"nome": "Camelo", "hex": "#c19a6b"},
-      {"nome": "Marrom", "hex": "#8b4513"}, {"nome": "Verde Oliva", "hex": "#556b2f"},
-      {"nome": "Caqui", "hex": "#c3b091"}, {"nome": "Off White", "hex": "#f8f8ff"}
+      {"nome": "Neutro 1", "hex": "#hex"}, {"nome": "Neutro 2", "hex": "#hex"},
+      {"nome": "Neutro 3", "hex": "#hex"}, {"nome": "Neutro 4", "hex": "#hex"},
+      {"nome": "Neutro 5", "hex": "#hex"}, {"nome": "Neutro 6", "hex": "#hex"},
+      {"nome": "Neutro 7", "hex": "#hex"}, {"nome": "Neutro 8", "hex": "#hex"}
     ]
   },
   "formatoRosto": {
-    "formato": "ex: OVAL",
-    "descricao": "Seu rosto apresenta linhas suaves e equilibradas...",
-    "caracteristicas": ["Testa levemente mais larga", "Maçãs do rosto destacadas", "Mandíbula suave"],
-    "pontosFortes": ["Versatilidade de cortes", "Harmonia natural"],
-    "oQueValoriza": ["Cortes médios a longos", "Ondas suaves", "Brincos médios a grandes", "Óculos arredondados"]
+    "formato": "FORMATO IDENTIFICADO",
+    "descricao": "Descrição detalhada do formato observado",
+    "caracteristicas": ["Característica 1", "Característica 2", "Característica 3"],
+    "pontosFortes": ["Ponto forte 1", "Ponto forte 2"],
+    "oQueValoriza": ["Recomendação 1", "Recomendação 2", "Recomendação 3", "Recomendação 4"]
   },
   "cabelo": {
     "observacaoVisual": {
-      "tipoFio": "ex: 2B a 2C (ondulado)",
-      "espessura": "ex: média",
-      "densidade": "ex: média/alta",
-      "porosidade": "ex: média",
-      "elasticidade": "ex: média",
-      "curvatura": "ex: ondas suaves a definidas"
+      "tipoFio": "Tipo observado",
+      "espessura": "Espessura observada",
+      "densidade": "Densidade observada",
+      "porosidade": "Porosidade observada",
+      "elasticidade": "Elasticidade observada",
+      "curvatura": "Padrão de curvatura observado"
     },
-    "diagnostico": "Fios com ondas bem definidas, movimento natural...",
-    "necessidades": ["Hidratação", "Nutrição", "Definição", "Selagem"],
-    "oQueEvitar": ["Excesso de calor", "Produtos com sulfatos fortes", "Lavagens muito frequentes"],
-    "rotinaIdeal": ["Shampoo suave", "Condicionador hidratante", "Máscara nutritiva", "Finalizador leve", "Secagem natural"],
-    "finalizadores": "Cremes leves, mousses, gelatinas e ativadores de cachos leves a médios."
+    "diagnostico": "Diagnóstico detalhado baseado na observação",
+    "necessidades": ["Necessidade 1", "Necessidade 2", "Necessidade 3"],
+    "oQueEvitar": ["Evitar 1", "Evitar 2", "Evitar 3"],
+    "rotinaIdeal": ["Passo 1", "Passo 2", "Passo 3", "Passo 4", "Passo 5"],
+    "finalizadores": "Descrição específica de finalizadores recomendados"
   },
-  "resumoBeleza": "Você tem uma beleza natural, leve e radiante..."
+  "resumoBeleza": "Resumo personalizado e inspirador da beleza única desta pessoa..."
 }
 
-IMPORTANTE:
-1. Preencha TODOS os campos com base na análise REAL da foto do usuário.
-2. 'cartelaIdeal' deve ter EXATAMENTE 12 CORES com 'nome' e 'hex'.
-3. 'neutrosIdeais' deve ter EXATAMENTE 8 CORES com 'nome' e 'hex'.
-4. PROIBIDO USAR CORES NEON OU GENÉRICAS (ex: #FF0000, #00FF00, #FFFF00). Gere apenas tons sofisticados, estéticos e profissionais, usando códigos HEX precisos e elegantes (ex: #CD5C5C, #E3A830, #6B7045).
-5. Retorne APENAS o JSON válido, sem NENHUM texto antes ou depois, sem formatação markdown.`;
+REGRAS CRÍTICAS:
+1. PERSONALIZE TUDO baseado na FOTO REAL - cada pessoa tem uma análise única
+2. cartelaIdeal: EXATAMENTE 12 cores com nomes e hexadecimais específicos
+3. neutrosIdeais: EXATAMENTE 8 cores
+4. CORES SOFISTICADAS E ELEGANTES apenas (nada neon ou genérico)
+5. Estações e subtons devem ser realistas (Primavera, Verão, Outono, Inverno + variações)
+6. Se a pessoa é Outono Quente, recomende cores quentes, terrosas, naturais
+7. Se a pessoa é Verão Frio, recomende cores frias, acinzentadas, suaves
+8. RETORNE APENAS JSON, nada mais`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',

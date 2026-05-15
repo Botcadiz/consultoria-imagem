@@ -48,14 +48,22 @@ const ResultInfographic = ({ data, image }) => {
             <Download size={18} /> Salvar Imagem
           </button>
         </div>
-        <div style={{ maxWidth: '100%', borderRadius: '8px', overflow: 'hidden' }}>
-          <img src={data.imageUrl} alt="Sua Consultoria de Imagem" style={{ width: '100%', height: 'auto', display: 'block' }} />
+        <div style={{ maxWidth: '600px', margin: '0 auto', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+          <img src={data.imageUrl} alt="Sua Consultoria de Imagem" style={{ width: '100%', height: 'auto', display: 'block' }} crossOrigin="anonymous" />
         </div>
       </div>
     );
   }
 
-  if (!data || !data.colorimetria) return null;
+  // If no image was generated, show error message instead of broken HTML fallback
+  if (!data || !data.colorimetria) {
+    return (
+      <div style={{ textAlign: 'center', padding: '3rem', color: '#d4af37' }}>
+        <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Aguardando geração da imagem...</p>
+        <p style={{ fontSize: '0.9rem', color: '#c8c0b4' }}>Se a imagem não aparecer, tente novamente.</p>
+      </div>
+    );
+  }
 
   const { colorimetria } = data;
 

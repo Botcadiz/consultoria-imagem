@@ -298,6 +298,7 @@ Lembre-se: PERSONALIZE TUDO baseado na foto real desta pessoa específica. Cada 
       // Generate DALL-E image (vertical 4:5 ratio = 1024x1792 unavailable, use 1024x1024)
       let imageUrl = null;
       try {
+        console.log('Iniciando geração DALL-E 3...');
         const dallePrompt = buildDallePrompt(resultData.colorimetria);
         const dalleResponse = await openai.images.generate({
           model: 'dall-e-3',
@@ -309,9 +310,12 @@ Lembre-se: PERSONALIZE TUDO baseado na foto real desta pessoa específica. Cada 
         });
         imageUrl = dalleResponse.data[0].url;
         resultData.imageUrl = imageUrl;
+        console.log('Imagem DALL-E gerada com sucesso');
       } catch (dalleError) {
-        console.error('Erro ao gerar imagem DALL-E:', dalleError.message);
-        // Continue without image, don't fail the request
+        console.error('Erro ao gerar imagem DALL-E:', dalleError.message, dalleError);
+        return res.status(500).json({
+          error: `Falha ao gerar imagem: ${dalleError.message || 'Erro desconhecido'}. Verifique sua API key e tente novamente.`
+        });
       }
 
       const { error: insertError } = await supabase.from('history').insert({

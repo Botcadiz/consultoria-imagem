@@ -135,8 +135,10 @@ function Analyzer() {
           {loading ? (
             <div className="loading-state" style={{ textAlign: 'center', padding: '2rem 0' }}>
               <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
-              <p style={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>Realizando análise profissional...</p>
-              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>A Inteligência Artificial está avaliando seus traços.</p>
+              <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '1.1rem' }}>Gerando sua consultoria personalizada...</p>
+              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginTop: '0.75rem' }}>Etapa 1: Analisando seu rosto com IA</p>
+              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Etapa 2: Criando sua arte visual exclusiva</p>
+              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '1rem', fontStyle: 'italic' }}>Isso pode levar até 1 minuto. Por favor, aguarde.</p>
             </div>
           ) : (
             <>

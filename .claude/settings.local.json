@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat .gitignore)",
+      "Bash(cat vercel.json)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

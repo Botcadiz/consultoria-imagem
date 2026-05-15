@@ -111,7 +111,9 @@ app.post('/api/analyze', authenticateToken, async (req, res) => {
     const { imageBase64 } = req.body;
     if (!imageBase64) return res.status(400).json({ error: 'Nenhuma imagem enviada.' });
 
-    const prompt = `Você é um consultor de imagem premium. Analise a foto e retorne dados estruturados.
+    const prompt = `Você é um consultor de imagem premium. Analise CUIDADOSAMENTE a foto da pessoa e retorne uma análise estruturada em JSON.
+
+IMPORTANTE: Retorne um objeto JSON válido com a seguinte estrutura:
 
 {
   "estacao": "ESTAÇÃO (ex: OUTONO QUENTE)",
@@ -125,7 +127,9 @@ app.post('/api/analyze', authenticateToken, async (req, res) => {
   "metais": ["metal1", "metal2"],
   "tonsCabelo": ["tom1", "tom2"],
   "forcaPrincipal": "ponto forte"
-}`;
+}
+
+PERSONALIZE a análise baseado COMPLETAMENTE nas características reais da pessoa na foto: tom de pele, subtom natural, luminosidade, contraste com cabelo e olhos. Cada pessoa deve ter uma análise única.`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',

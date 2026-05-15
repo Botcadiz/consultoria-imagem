@@ -107,59 +107,103 @@ app.get('/api/generation-count', authenticateToken, async (req, res) => {
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const buildDallePrompt = (a) => {
-  const cartela = (a.cartelaIdeal || []).slice(0, 12).map(c => c.nome).join(', ');
-  const valorizam = (a.coresValorizam?.cores || []).slice(0, 10).map(c => c.nome).join(', ');
-  const apagam = (a.coresApagam?.cores || []).slice(0, 10).map(c => c.nome).join(', ');
-  const metais = (a.metaisIdeais || []).map(m => m.nome).join(', ');
-  const cabelo = (a.melhoresTonsCabelo || []).map(c => c.nome).join(', ');
-  const neutros = (a.neutrosIdeais || []).slice(0, 8).map(c => c.nome).join(', ');
+  const cartela = (a.cartelaIdeal || []).slice(0, 12);
+  const cartelaNomes = cartela.map(c => `${c.nome} (${c.hex})`).join(', ');
+  const valorizam = (a.coresValorizam?.cores || []).slice(0, 10);
+  const valorizamNomes = valorizam.map(c => `${c.nome} (${c.hex})`).join(', ');
+  const apagam = (a.coresApagam?.cores || []).slice(0, 10);
+  const apagamNomes = apagam.map(c => `${c.nome} (${c.hex})`).join(', ');
+  const metais = (a.metaisIdeais || []).slice(0, 4).map(m => `${m.nome} (${m.hex})`).join(', ');
+  const cabelo = (a.melhoresTonsCabelo || []).slice(0, 4).map(c => `${c.nome} (${c.hex})`).join(', ');
+  const neutros = (a.neutrosIdeais || []).slice(0, 8).map(c => `${c.nome} (${c.hex})`).join(', ');
+  const estacao = a.estacaoCromatica || 'OUTONO QUENTE';
+  const descricao = a.descricaoEstacao || 'Sua beleza em harmonia com cores quentes e naturais';
 
-  return `Crie uma arte visual profissional de colorimetria pessoal em formato vertical 3:4, com estilo de painel premium de consultoria de imagem.
+  return `Design a professional personal colorimetry infographic poster in portrait format (ratio 3:4). This is a premium image consulting panel — styled like a high-end beauty editorial.
 
-ESTILO VISUAL:
-- Fundo PRETO com detalhes em DOURADO CLARO estiloso
-- Estética elegante, feminina, editorial, sofisticada e luxuosa
-- Tipografia serifada elegante para títulos, fonte limpa para textos
-- Cards arredondados com bordas finas douradas
-- Paletas de cores com quadrados arredondados e nomes embaixo
-- Ícones minimalistas dourados
-- Aparência de consultoria premium, fácil de salvar no celular
+OVERALL STYLE:
+- Pure black background (#0a0a0a)
+- All decorative lines, borders, titles and icons in warm gold (#c9a84c and #e8d5a3)
+- Elegant serif font for section titles and the main palette name, clean sans-serif for body text
+- Rounded-corner cards with thin gold borders
+- Premium, feminine, luxurious aesthetic — like an Instagram-saveable beauty guide
+- Centered layout, well-spaced, high readability
 
-LAYOUT (de cima para baixo):
+EXACT LAYOUT — top to bottom:
 
-1. TOPO: Foto da pessoa no canto superior esquerdo dentro de moldura arredondada com borda dourada. Ao lado direito, título grande SERIFADO "SUA COLORIMETRIA PESSOAL" em letras pequenas douradas, e abaixo título principal MUITO GRANDE: "${a.estacaoCromatica || 'OUTONO QUENTE'}". Abaixo frase italic dourada: "${a.descricaoEstacao || 'Sua beleza em harmonia com cores quentes e naturais'}"
+━━━ ZONE 1: TOP HEADER ━━━
+Left quarter: a square photo of a woman with a gold rounded-corner border (placeholder/generic woman face if no image provided).
+Right three-quarters:
+  - Small gold serif text: "SUA COLORIMETRIA PESSOAL"
+  - Very large bold serif title: "${estacao}"
+  - Thin gold divider line with a diamond ornament
+  - Italic gold script text: "${descricao}"
 
-2. SEÇÃO "SUA CARTELA IDEAL" - Grade com 12 quadrados arredondados de cores, cada um com nome dourado abaixo. Cores: ${cartela}
+━━━ ZONE 2: COLOR PALETTE — "SUA CARTELA IDEAL" ━━━
+Centered label "• SUA CARTELA IDEAL •" in small gold caps.
+Two rows of 6 rounded color swatches, each with an exact fill color and its name in small gold text below.
+Row 1 colors: ${cartelaNomes.split(', ').slice(0, 6).join(', ')}
+Row 2 colors: ${cartelaNomes.split(', ').slice(6, 12).join(', ')}
 
-3. COLUNA LATERAL ESQUERDA "SUA ANÁLISE" - Cards com ícones dourados:
-   • SUBTOM DA PELE: ${a.subtom?.titulo || 'Quente'} - ${a.subtom?.desc || 'dourado/amarelado'}
-   • CONTRASTE: ${a.contraste?.titulo || 'Médio'} - ${a.contraste?.desc || 'equilíbrio entre pele, cabelo e olhos'}
-   • PROFUNDIDADE: ${a.profundidade?.titulo || 'Média'} - ${a.profundidade?.desc || 'nem muito clara, nem muito profunda'}
-   • INTENSIDADE: ${a.intensidade?.titulo || 'Suave'} - ${a.intensidade?.desc || 'cores quentes e naturais'}
-   • FORMATO DO ROSTO: ${a.formatoRosto?.titulo || 'Oval'} - ${a.formatoRosto?.desc || 'equilíbrio facial'}
-   • IMPRESSÃO VISUAL: ${a.impressaoVisual || 'Natural e harmoniosa'}
+━━━ ZONE 3: TWO-COLUMN SECTION ━━━
 
-4. CARD "CORES QUE TE VALORIZAM" com check verde dourado. Texto: "${a.coresValorizam?.desc || 'Cores quentes e terrosas iluminam sua pele'}". Paleta com 10 quadrados: ${valorizam}
+LEFT COLUMN — Card titled "• SUA ANÁLISE •" with 6 items, each with a small gold icon:
+  ◉ [face icon] SUBTOM DA PELE (gold bold) — ${a.subtom?.titulo || 'Quente'} / ${a.subtom?.desc || 'dourado/amarelado'}
+  ◉ [circle half icon] CONTRASTE (gold bold) — ${a.contraste?.titulo || 'Médio'} / ${a.contraste?.desc || 'harmonia pele e cabelo'}
+  ◉ [gradient circle] PROFUNDIDADE (gold bold) — ${a.profundidade?.titulo || 'Média'} / ${a.profundidade?.desc || 'traços naturais'}
+  ◉ [sun icon] INTENSIDADE (gold bold) — ${a.intensidade?.titulo || 'Suave'} / ${a.intensidade?.desc || 'cores vivas te valorizam'}
+  ◉ [oval face outline] FORMATO DO ROSTO (gold bold) — ${a.formatoRosto?.titulo || 'Oval'} / ${a.formatoRosto?.desc || 'equilíbrio facial'}
+  ◉ [eye icon] IMPRESSÃO VISUAL (gold bold) — ${a.impressaoVisual || 'Natural e harmoniosa'}
 
-5. CARD "CORES QUE TE APAGAM" com X vermelho. Texto: "${a.coresApagam?.desc || 'Cores frias quebram sua harmonia natural'}". Paleta com 10 quadrados: ${apagam}
+RIGHT AREA — Two side-by-side cards:
+  LEFT CARD "✓ CORES QUE TE VALORIZAM" (gold checkmark icon):
+    Subtext: "${a.coresValorizam?.desc || 'Cores quentes e vibrantes realçam sua luz natural'}"
+    Two rows of 5 small rounded swatches: ${valorizamNomes}
 
-6. CARD "METAIS IDEAIS" - Texto: "${a.dicaMetais || 'Metais quentes realçam seu brilho natural'}". Círculos dourados realistas com: ${metais}
+  RIGHT CARD "✕ CORES QUE TE APAGAM" (red X icon):
+    Subtext: "${a.coresApagam?.desc || 'Cores frias e acinzentadas apagam seu brilho'}"
+    Two rows of 5 small grey/muted swatches: ${apagamNomes}
 
-7. CARD "MELHORES TONS DE CABELO" - Texto: "${a.dicaCabelo || 'Tons quentes harmonizam'}". Amostras visuais de mechas de cabelo nos tons: ${cabelo}
+━━━ ZONE 4: THREE-COLUMN CARDS ━━━
 
-8. CARD "MAQUIAGEM IDEAL" - Mostrar:
-   • BASE: ${a.maquiagemIdeal?.base?.desc || 'fundo dourado'}
-   • BLUSH: ${a.maquiagemIdeal?.blush?.desc || 'pêssego, coral'}
-   • BATOM: ${a.maquiagemIdeal?.batom?.desc || 'nude quente, terracota'}
-   • SOMBRAS: ${a.maquiagemIdeal?.sombras?.desc || 'dourado, cobre, bronze'}
+CARD 1 — "✦ METAIS IDEAIS":
+  Text: "${a.dicaMetais || 'Metais quentes e polidos trazem luz ao rosto'}"
+  Show 3 rendered metallic ring/hoop earring icons + 1 larger polished disc, colored: ${metais}
 
-9. SEÇÃO HORIZONTAL "NEUTROS IDEAIS" - 8 quadrados arredondados com: ${neutros}
+CARD 2 — "♀ MELHORES TONS DE CABELO":
+  Text: "${a.dicaCabelo || 'Tons quentes e iluminados harmonizam com seu subtom'}"
+  Show 4 hair swatch strands (curved lock shapes) colored: ${cabelo}
+  Below: italic tip text — "DICA: mechas sutis e reflexos dourados trazem mais brilho e dimensão."
 
-10. CARD INFERIOR "SUA FORÇA" - Título grande dourado: "${a.suaForca?.titulo || 'CALOR + NATURALIDADE'}". Texto: "${a.suaForca?.textoSecundario || 'Aposte: tons terrosos, dourados e naturais'}"
+CARD 3 — "🖌 MAQUIAGEM IDEAL":
+  Four labeled rows with a small color dot beside each:
+  BASE: ${a.maquiagemIdeal?.base?.desc || 'bege claro quente ou dourado'}
+  BLUSH: ${a.maquiagemIdeal?.blush?.desc || 'pêssego, coral ou damasco'}
+  BATOM: ${a.maquiagemIdeal?.batom?.desc || 'coral, pêssego ou nude rosado'}
+  SOMBRAS: ${a.maquiagemIdeal?.sombras?.desc || 'champanhe, dourado, cobre e marrom claro'}
 
-11. FAIXA FINAL - Frase manuscrita elegante dourada: "Você já tem tudo que precisa para brilhar!" e "${a.mensagemFinal || 'Quando você usa as cores certas, sua beleza aparece com mais leveza e confiança'}"
+━━━ ZONE 5: BOTTOM STRIP — "• NEUTROS IDEAIS •" ━━━
+One horizontal row of 8 rounded swatches with name labels: ${neutros}
 
-IMPORTANTE: Visual limpo, sofisticado, organizado em blocos claros, textos curtos, fontes legíveis e grandes. Use a pessoa na foto como referência para harmonizar todo o visual. Mantenha naturalidade e elegância.`;
+━━━ ZONE 6: BOTTOM SECTION — TWO COLUMNS ━━━
+
+LEFT CARD "◇ SUA FORÇA":
+  Large gold serif title: "${a.suaForca?.titulo || 'LUMINOSIDADE & VITALIDADE'}"
+  Body text: "${a.suaForca?.textoPrincipal || 'Seu brilho natural encanta!'}"
+  Secondary text: "${a.suaForca?.textoSecundario || 'Você irradia leveza, frescor e elegância.'}"
+
+RIGHT CARD — footer message:
+  Small decorative flower/leaf gold icon on left.
+  Italic gold script: "${a.mensagemFinal || 'Quando você usa as cores certas, sua essência se destaca.'}"
+  Below in larger italic gold script: "Mais confiança, mais leveza, mais você!"
+  Gold sparkle ✦ ornament on right.
+
+CRITICAL RULES:
+- All color swatches MUST be filled with their exact specified hex colors — do not approximate
+- Every section must be labeled in gold caps exactly as written above
+- No extra decorations or sections beyond what is specified
+- Text must be legible — minimum font contrast against black background
+- The overall aesthetic is dark luxury: black + gold + vivid color swatches only`;
 };
 
 app.post('/api/analyze', authenticateToken, async (req, res) => {
@@ -309,7 +353,7 @@ Lembre-se: PERSONALIZE TUDO baseado na foto real desta pessoa específica. Cada 
             prompt: imagePrompt,
             n: 1,
             size: '1024x1536',
-            quality: 'high'
+            quality: 'medium'
           });
         } catch (e) {
           console.log('gpt-image-1 falhou, tentando dall-e-3...');

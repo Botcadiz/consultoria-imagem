@@ -154,6 +154,7 @@ const ResultInfographic = ({ data, image }) => {
   const wrapperRef = useRef();
   const canvasRef = useRef();
   const [scale, setScale] = useState(0.5);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     const update = () => {
@@ -167,39 +168,52 @@ const ResultInfographic = ({ data, image }) => {
     return () => ro.disconnect();
   }, []);
 
-  const exportJpeg = async () => {
+  const captureCanvas = async () => {
     const el = canvasRef.current;
-    const canvas = await html2canvas(el, {
+    return html2canvas(el, {
       scale: 2,
       useCORS: true,
+      allowTaint: false,
       width: CANVAS_W,
       height: CANVAS_H,
       backgroundColor: T.bgMain,
       scrollX: 0,
       scrollY: -window.scrollY,
+      imageTimeout: 15000,
     });
-    const url = canvas.toDataURL('image/jpeg', 0.95);
-    const a = document.createElement('a');
-    a.download = 'visage-colorimetria.jpg';
-    a.href = url;
-    a.click();
+  };
+
+  const exportJpeg = async () => {
+    if (exporting) return;
+    try {
+      setExporting(true);
+      const canvas = await captureCanvas();
+      const url = canvas.toDataURL('image/jpeg', 0.95);
+      const a = document.createElement('a');
+      a.download = 'visage-colorimetria.jpg';
+      a.href = url;
+      a.click();
+    } catch (err) {
+      alert('Erro ao exportar imagem: ' + err.message);
+    } finally {
+      setExporting(false);
+    }
   };
 
   const exportPdf = async () => {
-    const el = canvasRef.current;
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      width: CANVAS_W,
-      height: CANVAS_H,
-      backgroundColor: T.bgMain,
-      scrollX: 0,
-      scrollY: -window.scrollY,
-    });
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const pdf = new jsPDF({ orientation: 'p', unit: 'px', format: [CANVAS_W, CANVAS_H] });
-    pdf.addImage(imgData, 'JPEG', 0, 0, CANVAS_W, CANVAS_H);
-    pdf.save('visage-colorimetria.pdf');
+    if (exporting) return;
+    try {
+      setExporting(true);
+      const canvas = await captureCanvas();
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const pdf = new jsPDF({ orientation: 'p', unit: 'px', format: [CANVAS_W, CANVAS_H] });
+      pdf.addImage(imgData, 'JPEG', 0, 0, CANVAS_W, CANVAS_H);
+      pdf.save('visage-colorimetria.pdf');
+    } catch (err) {
+      alert('Erro ao gerar PDF: ' + err.message);
+    } finally {
+      setExporting(false);
+    }
   };
 
   // Support both old and new data shapes
@@ -260,11 +274,11 @@ const ResultInfographic = ({ data, image }) => {
   return (
     <div className="ed-wrapper">
       <div className="export-actions" style={{ marginBottom: '1.5rem' }}>
-        <button onClick={exportJpeg} className="btn btn-primary" style={{ width: 'auto' }}>
-          <Download size={16} /> Salvar JPEG
+        <button onClick={exportJpeg} className="btn btn-primary" style={{ width: 'auto' }} disabled={exporting}>
+          <Download size={16} /> {exporting ? 'Gerando...' : 'Salvar JPEG'}
         </button>
-        <button onClick={exportPdf} className="btn btn-outline">
-          <FileText size={16} /> Baixar PDF
+        <button onClick={exportPdf} className="btn btn-outline" disabled={exporting}>
+          <FileText size={16} /> {exporting ? 'Gerando...' : 'Baixar PDF'}
         </button>
       </div>
 

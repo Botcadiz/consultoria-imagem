@@ -16,11 +16,6 @@ function Analyzer() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Auto-login in dev mode
-    if (!localStorage.getItem('token')) {
-      localStorage.setItem('token', 'dev-test-token-' + Date.now());
-      localStorage.setItem('email', 'dev@test.com');
-    }
     fetchGenerationCount();
   }, []);
 
@@ -192,13 +187,7 @@ function Analyzer() {
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  const isDev = !import.meta.env.PROD;
-  // Allow bypass in dev mode for testing
-  if (isDev && !token) {
-    localStorage.setItem('token', 'dev-test-token');
-    localStorage.setItem('email', 'dev@test.com');
-  }
-  return token || isDev ? children : <Navigate to="/auth" />;
+  return token ? children : <Navigate to="/auth" />;
 };
 
 function App() {

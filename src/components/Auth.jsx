@@ -6,15 +6,22 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    if (password.length < 8) {
+      setError('Senha deve ter no mínimo 8 caracteres.');
+      return;
+    }
+
     const endpoint = isLogin ? '/api/login' : '/api/register';
 
     try {
+      setLoading(true);
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -37,6 +44,8 @@ export default function Auth() {
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,8 +92,8 @@ export default function Auth() {
             />
           </div>
           
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-            {isLogin ? 'Entrar' : 'Cadastrar'}
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
+            {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Cadastrar')}
           </button>
         </form>
 

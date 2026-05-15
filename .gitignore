@@ -30,3 +30,4 @@ database.sqlite-shm
 database.sqlite-wal
 
 .vercel
+!.env.example

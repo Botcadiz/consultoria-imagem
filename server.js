@@ -4,15 +4,53 @@ import dotenv from 'dotenv';
 import OpenAI from 'openai';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
 import supabase from './database.js';
 
 dotenv.config();
 
-const app = express();
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
+// ── Validação de variáveis obrigatórias ──────────────────────
+const REQUIRED_ENV = ['OPENAI_API_KEY', 'SUPABASE_URL', 'JWT_SECRET'];
+for (const key of REQUIRED_ENV) {
+  if (!process.env[key]) {
+    console.error(`❌ Variável de ambiente obrigatória ausente: ${key}`);
+    process.exit(1);
+  }
+}
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secrect-key-123';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// ── CORS ──────────────────────────────────────────────────────
+const allowedOrigins = process.env.FRONTEND_URL
+  ? [process.env.FRONTEND_URL, 'http://localhost:5173']
+  : ['http://localhost:5173', 'http://localhost:4173'];
+
+const app = express();
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error('Origem não permitida pelo CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+app.use(express.json({ limit: '10mb' }));
+
+// ── Rate limiting ─────────────────────────────────────────────
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Muitas tentativas. Tente novamente em 15 minutos.' },
+});
+
+const analyzeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  message: { error: 'Limite de análises atingido. Aguarde 1 minuto.' },
+});
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -26,11 +64,21 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+// ── Validação de helpers ──────────────────────────────────────
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function validateAuth(email, password) {
+  if (!email || !password) return 'E-mail e senha são obrigatórios.';
+  if (!EMAIL_RE.test(email)) return 'E-mail inválido.';
+  if (password.length < 8) return 'Senha deve ter no mínimo 8 caracteres.';
+  return null;
+}
+
 // ==================== REGISTER ====================
-app.post('/api/register', async (req, res) => {
+app.post('/api/register', authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
+    const validErr = validateAuth(email, password);
+    if (validErr) return res.status(400).json({ error: validErr });
 
     const { data: existing } = await supabase.from('users').select('id').eq('email', email).maybeSingle();
     if (existing) return res.status(400).json({ error: 'E-mail já cadastrado.' });
@@ -47,9 +95,10 @@ app.post('/api/register', async (req, res) => {
 });
 
 // ==================== LOGIN ====================
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
 
     const { data: user } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
     if (!user) return res.status(400).json({ error: 'E-mail não encontrado.' });
@@ -106,7 +155,7 @@ app.get('/api/generation-count', authenticateToken, async (req, res) => {
 // ==================== ANALYZE ====================
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-app.post('/api/analyze', authenticateToken, async (req, res) => {
+app.post('/api/analyze', authenticateToken, analyzeLimiter, async (req, res) => {
   try {
     const { imageBase64 } = req.body;
     if (!imageBase64) return res.status(400).json({ error: 'Nenhuma imagem enviada.' });

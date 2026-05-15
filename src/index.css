@@ -1023,15 +1023,15 @@ h1, h2, h3, h4, h5, h6 {
    ========================================= */
 
 .poster-infographic {
-  background: linear-gradient(180deg, #f5f1e8 0%, #efe8dd 50%, #f5f1e8 100%);
-  color: #3d3d3d;
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a1410 50%, #0a0a0a 100%);
+  color: #f5f1e8;
   font-family: var(--font-sans);
-  padding: 3rem 2rem;
-  max-width: 1000px;
+  padding: 3rem 2.5rem;
+  max-width: 1100px;
   margin: 0 auto;
-  border-radius: 8px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 40px rgba(212, 175, 55, 0.12);
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 50px rgba(212, 175, 55, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -1062,21 +1062,22 @@ h1, h2, h3, h4, h5, h6 {
 
 .poster-super-title {
   font-family: var(--font-luxury);
-  font-size: 0.8rem;
-  letter-spacing: 0.35em;
+  font-size: 1.1rem;
+  letter-spacing: 0.4em;
   text-transform: uppercase;
   color: #d4af37;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
   font-weight: 500;
 }
 
 .poster-title {
   font-family: var(--font-serif);
-  font-size: 4.2rem;
+  font-size: 5rem;
   font-weight: 700;
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: #f3e5ab;
   background: linear-gradient(135deg, #d4af37 0%, #f3e5ab 45%, #e8c860 55%, #d4af37 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -1087,12 +1088,12 @@ h1, h2, h3, h4, h5, h6 {
 .poster-title-line { display: none; }
 
 .poster-cursive {
-  font-family: 'Dancing Script', cursive;
-  font-size: 1.6rem;
-  font-weight: 500;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
   color: #f3e5ab;
   margin: 0 auto 1.5rem;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   display: inline-block;
   padding: 0.4rem 2rem;
   background: transparent;
@@ -1144,10 +1145,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar-box {
-  background: linear-gradient(160deg, #f9f5ed 0%, #f5f1e8 100%);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 10px;
-  padding: 1.5rem 1.25rem;
+  background: linear-gradient(160deg, rgba(20, 18, 14, 0.9) 0%, rgba(10, 8, 6, 0.95) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 12px;
+  padding: 1.75rem 1.5rem;
 }
 
 .sidebar-title {
@@ -1156,11 +1157,11 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   gap: 0.5rem;
   font-family: var(--font-luxury);
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   color: #d4af37;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  margin-bottom: 1.5rem;
+  letter-spacing: 0.25em;
+  margin-bottom: 1.75rem;
   position: relative;
   font-weight: 600;
 }
@@ -1216,26 +1217,26 @@ h1, h2, h3, h4, h5, h6 {
 
 .si-content h4 {
   font-family: var(--font-luxury);
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   color: #d4af37;
-  margin-bottom: 0.25rem;
-  letter-spacing: 0.18em;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.2em;
   font-weight: 600;
   text-transform: uppercase;
 }
 
 .si-content strong {
-  font-size: 0.95rem;
-  color: #3d3d3d;
+  font-size: 1.15rem;
+  color: #f5f1e8;
   display: block;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.35rem;
   font-weight: 600;
 }
 
 .si-content p {
-  font-size: 0.78rem;
-  color: #6b6b6b;
-  line-height: 1.45;
+  font-size: 0.95rem;
+  color: #c8c0b4;
+  line-height: 1.5;
   font-weight: 400;
 }
 
@@ -1251,32 +1252,32 @@ h1, h2, h3, h4, h5, h6 {
 
 .sh-title {
   font-family: var(--font-luxury);
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   color: #d4af37;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
-  margin-bottom: 0.6rem;
+  letter-spacing: 0.25em;
+  margin-bottom: 0.75rem;
   font-weight: 600;
 }
 
 .sh-cursive {
-  font-family: 'Dancing Script', cursive;
-  font-size: 2.5rem;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 700;
   background: linear-gradient(135deg, #d4af37 0%, #f3e5ab 50%, #d4af37 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 0.25rem;
-  letter-spacing: 0;
-  text-transform: none;
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   line-height: 1.1;
 }
 
 .sh-sub {
-  font-size: 0.8rem;
-  color: #6b6b6b;
-  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  color: #c8c0b4;
+  margin-bottom: 0.85rem;
   font-weight: 400;
   font-style: italic;
 }
@@ -1366,8 +1367,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-divider span {
-  position: relative; z-index: 2; background: #f5f1e8; padding: 0 1.5rem; font-family: var(--font-luxury);
-  font-size: 0.95rem; color: #d4af37; text-transform: uppercase; font-weight: 600; letter-spacing: 0.2em;
+  position: relative; z-index: 2; background: #0a0a0a; padding: 0 1.75rem; font-family: var(--font-luxury);
+  font-size: 1.15rem; color: #d4af37; text-transform: uppercase; font-weight: 600; letter-spacing: 0.25em;
 }
 
 .cartela-grid-12 {
@@ -1392,14 +1393,14 @@ h1, h2, h3, h4, h5, h6 {
 .color-swatch {
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  border: 1px solid rgba(212, 175, 55, 0.4);
 }
 
 .color-swatch-box span {
-  font-size: 0.65rem;
-  color: #e8c860;
+  font-size: 0.78rem;
+  color: #f3e5ab;
   text-transform: uppercase;
   text-align: center;
   font-weight: 600;
@@ -1414,31 +1415,31 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .poster-box {
-  background: linear-gradient(160deg, #f9f5ed 0%, #f5f1e8 100%);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 10px;
-  padding: 1.25rem;
+  background: linear-gradient(160deg, rgba(20, 18, 14, 0.92) 0%, rgba(10, 8, 6, 0.95) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 12px;
+  padding: 1.5rem;
 }
 
 .success-box {
-  background: linear-gradient(160deg, rgba(122, 168, 114, 0.1) 0%, rgba(245, 241, 232, 0.8) 100%);
-  border-color: rgba(122, 168, 114, 0.4);
+  background: linear-gradient(160deg, rgba(122, 168, 114, 0.18) 0%, rgba(10, 8, 6, 0.92) 100%);
+  border-color: rgba(122, 168, 114, 0.5);
 }
 
 .danger-box {
-  background: linear-gradient(160deg, rgba(192, 120, 112, 0.1) 0%, rgba(245, 241, 232, 0.8) 100%);
-  border-color: rgba(192, 120, 112, 0.4);
+  background: linear-gradient(160deg, rgba(192, 120, 112, 0.18) 0%, rgba(10, 8, 6, 0.92) 100%);
+  border-color: rgba(192, 120, 112, 0.5);
 }
 
 .box-header {
   display: flex; align-items: center; gap: 0.5rem;
   font-family: var(--font-luxury);
-  font-size: 0.8rem; color: #d4af37; text-transform: uppercase;
-  margin-bottom: 0.6rem; font-weight: 600; letter-spacing: 0.18em;
+  font-size: 1rem; color: #d4af37; text-transform: uppercase;
+  margin-bottom: 0.85rem; font-weight: 600; letter-spacing: 0.2em;
 }
 
 .box-desc {
-  font-size: 0.78rem; color: #6b6b6b; margin-bottom: 1rem; line-height: 1.45; font-weight: 400;
+  font-size: 0.95rem; color: #c8c0b4; margin-bottom: 1.15rem; line-height: 1.5; font-weight: 400;
 }
 
 .mini-swatch-grid {
@@ -1476,36 +1477,36 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .metal-swatch-box span {
-  font-size: 0.65rem; color: #e8c860; text-transform: uppercase; text-align: center; font-weight: 600; letter-spacing: 0.08em;
+  font-size: 0.78rem; color: #f3e5ab; text-transform: uppercase; text-align: center; font-weight: 600; letter-spacing: 0.1em;
 }
 
 .hair-flex {
-  display: flex; gap: 0.25rem; justify-content: space-between; margin-top: 1rem;
+  display: flex; gap: 0.4rem; justify-content: space-between; margin-top: 1rem;
 }
 
 .hair-swatch-box {
-  display: flex; flex-direction: column; align-items: center; gap: 0.25rem; flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 0.35rem; flex: 1;
 }
 
 .hair-color-block {
-  width: 100%; height: 70px; border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  width: 100%; height: 80px; border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+  border: 1px solid rgba(212, 175, 55, 0.4);
 }
 
 .hair-swatch-box span {
-  font-size: 0.55rem; color: #e8c860; text-transform: uppercase; text-align: center; font-weight: 700; line-height: 1.1; margin-top: 0.35rem; letter-spacing: 0.08em;
+  font-size: 0.7rem; color: #f3e5ab; text-transform: uppercase; text-align: center; font-weight: 700; line-height: 1.15; margin-top: 0.4rem; letter-spacing: 0.08em;
 }
 
 .hair-tip-box {
-  background: rgba(212, 175, 55, 0.06);
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  padding: 0.75rem;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 0.9rem;
   border-radius: 8px;
   margin-top: 1rem;
-  font-size: 0.72rem;
-  color: #6b6b6b;
-  line-height: 1.4;
+  font-size: 0.85rem;
+  color: #c8c0b4;
+  line-height: 1.5;
 }
 
 .hair-tip-box strong { color: #d4af37; }
@@ -1533,11 +1534,11 @@ h1, h2, h3, h4, h5, h6 {
 .bg-sombras { background: #b87333; }
 
 .makeup-text {
-  font-size: 0.72rem; color: #6b6b6b; line-height: 1.35; font-weight: 400;
+  font-size: 0.9rem; color: #c8c0b4; line-height: 1.4; font-weight: 400;
 }
 
 .makeup-text strong {
-  color: #d4af37; font-weight: 700;
+  color: #d4af37; font-weight: 700; font-size: 0.95rem;
 }
 
 .makeup-item strong {
@@ -1558,13 +1559,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .pf-decor-left {
-  font-family: 'Dancing Script', cursive;
-  font-size: 1.3rem;
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
   color: #f3e5ab;
   text-align: center;
   line-height: 1.4;
   padding: 0.5rem;
   font-style: italic;
+  font-weight: 500;
 }
 
 .pf-decor-right {
@@ -1578,9 +1580,9 @@ h1, h2, h3, h4, h5, h6 {
 .pf-decor-right .pf-remember-title {
   display: flex; align-items: center; gap: 0.4rem;
   font-family: var(--font-luxury);
-  font-size: 0.72rem; color: #d4af37;
-  font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  font-size: 0.9rem; color: #d4af37;
+  font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+  margin-bottom: 0.65rem;
 }
 
 .pf-decor-right .pf-remember-title svg {
@@ -1588,19 +1590,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .pf-decor-right .pf-remember-text {
-  font-size: 0.75rem; color: #6b6b6b; line-height: 1.45;
+  font-size: 0.9rem; color: #c8c0b4; line-height: 1.5;
 }
 
 .pf-main {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.10) 0%, rgba(212, 175, 55, 0.03) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  border-radius: 10px;
-  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.14) 0%, rgba(212, 175, 55, 0.04) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 12px;
+  padding: 1.5rem;
 }
 
 .pf-cursive-msg {
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 400;
   font-style: italic;
   color: #f3e5ab;

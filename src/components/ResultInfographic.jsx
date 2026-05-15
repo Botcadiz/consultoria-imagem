@@ -155,6 +155,39 @@ const ResultInfographic = ({ data, image }) => {
                 </div>
               </div>
 
+              {/* Formato do Rosto */}
+              {colorimetria.formatoRosto && (
+                <div className="sidebar-item with-icon">
+                  <div className="si-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <ellipse cx="12" cy="12" rx="7" ry="9" stroke="#d4af37" strokeWidth="1.5" fill="none"/>
+                      <circle cx="12" cy="11" r="1" fill="#d4af37"/>
+                    </svg>
+                  </div>
+                  <div className="si-content">
+                    <h4>FORMATO DO ROSTO</h4>
+                    <strong>{colorimetria.formatoRosto?.titulo}</strong>
+                    <p>{colorimetria.formatoRosto?.desc}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Impressão Visual */}
+              {colorimetria.impressaoVisual && (
+                <div className="sidebar-item with-icon">
+                  <div className="si-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z" stroke="#d4af37" strokeWidth="1.5"/>
+                      <circle cx="12" cy="12" r="3" stroke="#d4af37" strokeWidth="1.5"/>
+                    </svg>
+                  </div>
+                  <div className="si-content">
+                    <h4>IMPRESSÃO VISUAL</h4>
+                    <p style={{ marginTop: '0.25rem' }}>{colorimetria.impressaoVisual}</p>
+                  </div>
+                </div>
+              )}
+
               {/* Estação Cromática highlight box */}
               <div className="sidebar-highlight-box">
                 <p className="sh-title">ESTAÇÃO CROMÁTICA</p>
@@ -166,8 +199,13 @@ const ResultInfographic = ({ data, image }) => {
               {/* Seus Pontos Fortes */}
               {colorimetria.suaForca && (
                 <div className="sidebar-force-box">
-                  <p className="sf-title"><Heart size={14} /> SEUS PONTOS FORTES</p>
+                  <p className="sf-title"><Heart size={14} /> SUA FORÇA</p>
                   <strong>{colorimetria.suaForca?.titulo}</strong>
+                  {colorimetria.suaForca?.textoSecundario && (
+                    <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#c8c0b4' }}>
+                      {colorimetria.suaForca.textoSecundario}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -302,8 +340,7 @@ const ResultInfographic = ({ data, image }) => {
               </div>
               <div className="pf-main">
                 <p className="pf-cursive-msg">
-                  Quando você usa as cores certas,<br/>
-                  sua beleza aparece com mais leveza, confiança e naturalidade.
+                  {colorimetria.mensagemFinal || 'Quando você usa as cores certas, sua beleza aparece com mais leveza, confiança e naturalidade.'}
                   <strong>Seja sua melhor versão todos os dias!</strong>
                 </p>
               </div>

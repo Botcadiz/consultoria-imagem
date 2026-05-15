@@ -298,22 +298,42 @@ Lembre-se: PERSONALIZE TUDO baseado na foto real desta pessoa específica. Cada 
       // Generate DALL-E image (vertical 4:5 ratio = 1024x1792 unavailable, use 1024x1024)
       let imageUrl = null;
       try {
-        console.log('Iniciando geração DALL-E 3...');
-        const dallePrompt = buildDallePrompt(resultData.colorimetria);
-        const dalleResponse = await openai.images.generate({
-          model: 'dall-e-3',
-          prompt: dallePrompt,
-          n: 1,
-          size: '1024x1792',
-          quality: 'standard'
-        });
-        imageUrl = dalleResponse.data[0].url;
+        console.log('Iniciando geração de imagem...');
+        const imagePrompt = buildDallePrompt(resultData.colorimetria);
+
+        // Try gpt-image-1 first (2025+ model), fallback to dall-e-3
+        let imgResponse;
+        try {
+          imgResponse = await openai.images.generate({
+            model: 'gpt-image-1',
+            prompt: imagePrompt,
+            n: 1,
+            size: '1024x1536',
+            quality: 'high'
+          });
+        } catch (e) {
+          console.log('gpt-image-1 falhou, tentando dall-e-3...');
+          imgResponse = await openai.images.generate({
+            model: 'dall-e-3',
+            prompt: imagePrompt,
+            n: 1,
+            size: '1024x1792',
+            quality: 'standard'
+          });
+        }
+
+        const imgData = imgResponse.data[0];
+        if (imgData.b64_json) {
+          imageUrl = `data:image/png;base64,${imgData.b64_json}`;
+        } else if (imgData.url) {
+          imageUrl = imgData.url;
+        }
         resultData.imageUrl = imageUrl;
-        console.log('Imagem DALL-E gerada com sucesso');
-      } catch (dalleError) {
-        console.error('Erro ao gerar imagem DALL-E:', dalleError.message, dalleError);
+        console.log('Imagem gerada com sucesso');
+      } catch (imgError) {
+        console.error('Erro ao gerar imagem:', imgError.message, imgError);
         return res.status(500).json({
-          error: `Falha ao gerar imagem: ${dalleError.message || 'Erro desconhecido'}. Tente novamente.`
+          error: `Falha ao gerar imagem: ${imgError.message || 'Erro desconhecido'}. Tente novamente.`
         });
       }
 

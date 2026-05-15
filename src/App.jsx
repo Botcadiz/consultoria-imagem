@@ -147,15 +147,15 @@ function Analyzer() {
                 <div className="file-upload">
                   <input type="file" accept="image/*" onChange={handleImageChange} />
                   {image ? (
-                    <div>
-                      <img src={image} alt="Preview" style={{ maxHeight: '100px', width: 'auto', borderRadius: '8px', marginBottom: '10px' }} />
-                      <p>Foto selecionada. Clique para trocar.</p>
+                    <div style={{ textAlign: 'center' }}>
+                      <img src={image} alt="Preview" style={{ maxHeight: '260px', width: 'auto', maxWidth: '100%', borderRadius: '12px', marginBottom: '14px', border: '2px solid rgba(212, 175, 55, 0.5)', boxShadow: '0 6px 20px rgba(0,0,0,0.4)' }} />
+                      <p style={{ fontSize: '1rem', color: 'var(--color-secondary)' }}>Foto selecionada. Clique para trocar.</p>
                     </div>
                   ) : (
                     <div>
-                      <Upload size={32} color="var(--color-primary)" style={{ marginBottom: '10px' }} />
-                      <p>Arraste uma foto ou clique para selecionar</p>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                      <Upload size={48} color="var(--color-primary)" style={{ marginBottom: '14px' }} />
+                      <p style={{ fontSize: '1.05rem', fontWeight: 500 }}>Arraste uma foto ou clique para selecionar</p>
+                      <span style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
                         Rosto bem iluminado, sem distorções
                       </span>
                     </div>

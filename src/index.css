@@ -30,11 +30,15 @@
 
 body {
   font-family: var(--font-sans);
-  background: radial-gradient(circle at 50% 0%, #2a2515 0%, #0a0a0a 60%, #000000 100%);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(148, 78, 84, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0806 0%, #050403 100%);
   background-attachment: fixed;
   color: var(--color-text-main);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
 
 /* Background Animation */
@@ -53,7 +57,9 @@ body::before {
   min-height: 100vh;
   z-index: 1;
   overflow-x: hidden;
-  padding: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Floating Orbs Animation */
@@ -69,6 +75,10 @@ body::before {
 }
 
 .orb {
+  display: none;
+}
+
+.orb-old {
   position: absolute;
   border-radius: 50%;
   filter: blur(120px);
@@ -123,13 +133,14 @@ h1, h2, h3, h4, h5, h6 {
 .container {
   max-width: 1300px;
   margin: 0 auto;
-  padding: 0.5rem 1rem;
+  padding: 2rem 1rem;
+  width: 100%;
   animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .header h1 {

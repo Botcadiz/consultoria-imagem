@@ -134,6 +134,7 @@ RETORNE EXCLUSIVAMENTE este JSON (sem markdown, sem texto fora do JSON):
   "contraste": "Nível e nuance ex: Médio — harmonia suave entre pele clara e cabelos castanhos",
   "profundidade": "Nível ex: Clara a média — traços luminosos com presença discreta",
   "intensidade": "Nível ex: Suave — cores naturais e de média saturação te valorizam",
+  "temperatura_beleza": "Quente / Fria / Neutra — ex: Quente — sua paleta irradia aconchego e vitalidade",
   "formato_rosto": "Forma ex: Oval — linha da mandíbula suave, testa ligeiramente mais larga",
   "impressao_visual": "Impressão global ex: Elegante e acolhedora. Traços suaves com expressão marcante.",
   "cartela_ideal": [
@@ -181,6 +182,7 @@ REQUISITOS NÃO-NEGOCIÁVEIS:
 - cartela_ideal: EXATAMENTE 12 cores, nomes em MAIÚSCULAS (1-2 palavras), hex preciso
 - cores_valorizam: EXATAMENTE 8 cores coerentes com a estação
 - cores_apagam: EXATAMENTE 8 cores que tecnicamente prejudicam
+- temperatura_beleza: Quente / Fria / Neutra com breve explicação
 - metais: 2 a 4 opções (ex: Ouro Amarelo Luminoso, Ouro Rosé Quente, Champagne Dourado)
 - tons_cabelo: EXATAMENTE 4 tons com hex realistas de cabelo humano
 - reflexos: 1 a 3 opções de reflexos/mechas
@@ -220,8 +222,9 @@ PROIBIDO: nomes genéricos ("Cor 1"), clichês de autoajuda, texto fora do JSON.
           subtom:         aiData.subtom         || 'Quente — tom natural',
           contraste:      aiData.contraste      || 'Médio',
           profundidade:   aiData.profundidade   || 'Média',
-          intensidade:    aiData.intensidade    || 'Suave',
-          formato_rosto:  aiData.formato_rosto  || 'Oval',
+          intensidade:        aiData.intensidade        || 'Suave',
+          temperatura_beleza: aiData.temperatura_beleza  || '',
+          formato_rosto:      aiData.formato_rosto       || 'Oval',
           impressao_visual: aiData.impressao_visual || 'Harmoniosa e natural.',
           cartela_ideal:  aiData.cartela_ideal  || [],
           cores_valorizam: aiData.cores_valorizam || [],

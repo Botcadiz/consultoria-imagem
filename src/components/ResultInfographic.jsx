@@ -205,25 +205,26 @@ const ResultInfographic = ({ data, image }) => {
   // Support both old and new data shapes
   const raw = data?.colorimetria || data || {};
   const c = {
-    estacao:       raw.estacao        || raw.estacaoCromatica        || '',
-    subtipo:       raw.subtipo        || raw.estacaoCromaticaSub     || '',
-    frase:         raw.frase_principal || raw.descricaoEstacao        || '',
+    estacao:       raw.estacao           || raw.estacaoCromatica        || '',
+    subtipo:       raw.subtipo           || raw.estacaoCromaticaSub     || '',
+    frase:         raw.frase_principal   || raw.descricaoEstacao        || '',
     subtom:        typeof raw.subtom === 'string' ? raw.subtom : raw.subtom?.titulo || '',
     contraste:     typeof raw.contraste === 'string' ? raw.contraste : raw.contraste?.titulo || '',
     profundidade:  typeof raw.profundidade === 'string' ? raw.profundidade : raw.profundidade?.titulo || '',
     intensidade:   typeof raw.intensidade === 'string' ? raw.intensidade : raw.intensidade?.titulo || '',
+    temperatura:   raw.temperatura_beleza || '',
     formatoRosto:  typeof raw.formato_rosto === 'string' ? raw.formato_rosto : (raw.formatoRosto?.titulo || raw.formato_rosto || ''),
     impressao:     raw.impressao_visual  || raw.impressaoVisual || '',
-    cartela:       raw.cartela_ideal    || raw.cartelaIdeal     || [],
-    valorizam:     raw.cores_valorizam  || raw.coresValorizam?.cores || [],
-    apagam:        raw.cores_apagam     || raw.coresApagam?.cores    || [],
-    metais:        raw.metais           || raw.metaisIdeais           || [],
-    cabelo:        raw.tons_cabelo      || raw.melhoresTonsCabelo     || [],
-    reflexos:      raw.reflexos         || [],
-    maquiagem:     raw.maquiagem        || raw.maquiagemIdeal         || {},
-    neutros:       raw.neutros          || raw.neutrosIdeais          || [],
-    forca:         raw.forca_visual     || raw.suaForca?.titulo       || '',
-    mensagem:      raw.mensagem_final   || '',
+    forca_visual:  raw.forca_visual      || raw.suaForca?.titulo || '',
+    cartela:       raw.cartela_ideal     || raw.cartelaIdeal     || [],
+    valorizam:     raw.cores_valorizam   || raw.coresValorizam?.cores || [],
+    apagam:        raw.cores_apagam      || raw.coresApagam?.cores    || [],
+    metais:        raw.metais            || raw.metaisIdeais           || [],
+    cabelo:        raw.tons_cabelo       || raw.melhoresTonsCabelo     || [],
+    reflexos:      raw.reflexos          || [],
+    maquiagem:     raw.maquiagem         || raw.maquiagemIdeal         || {},
+    neutros:       raw.neutros           || raw.neutrosIdeais          || [],
+    mensagem:      raw.mensagem_final    || '',
   };
 
   if (!c.estacao) {
@@ -408,12 +409,13 @@ const ResultInfographic = ({ data, image }) => {
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 10px' }}>
                       {[
-                        { label: 'SUBTOM DA PELE', value: c.subtom },
-                        { label: 'CONTRASTE', value: c.contraste },
-                        { label: 'PROFUNDIDADE', value: c.profundidade },
-                        { label: 'INTENSIDADE', value: c.intensidade },
-                        { label: 'FORMATO DO ROSTO', value: c.formatoRosto },
-                      ].map((item, i) => (
+                        { label: 'SUBTOM DA PELE',     value: c.subtom },
+                        { label: 'CONTRASTE',           value: c.contraste },
+                        { label: 'PROFUNDIDADE',        value: c.profundidade },
+                        { label: 'INTENSIDADE',         value: c.intensidade },
+                        { label: 'TEMPERATURA',         value: c.temperatura },
+                        { label: 'FORMATO DO ROSTO',    value: c.formatoRosto },
+                      ].filter(x => x.value).map((item, i) => (
                         <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
                           <div style={{
                             width: 5, height: 5, borderRadius: '50%',
@@ -469,94 +471,175 @@ const ResultInfographic = ({ data, image }) => {
               {/* ═══ STYLE GUIDE: METAIS + CABELO + MAQUIAGEM ═ */}
               <div style={{ display: 'flex', gap: 10, marginTop: 10, flexShrink: 0 }}>
 
-                {/* METAIS */}
+                {/* ─── METAIS IDEAIS ─── */}
                 <div style={{
                   flex: 1, border: `1px solid ${T.border}`, borderRadius: 2,
-                  background: T.bgCard, padding: '8px 10px',
+                  background: T.bgCard, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <GoldLineSolid style={{ flex: 1 }} />
-                    <SectionLabel>METAIS IDEAIS</SectionLabel>
-                    <GoldLineSolid style={{ flex: 1 }} />
+                  {/* Library image */}
+                  <div style={{ position: 'relative', height: 130, overflow: 'hidden', flexShrink: 0 }}>
+                    <img
+                      src="/assets/biblioteca-metais.png"
+                      crossOrigin="anonymous"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }}
+                    />
+                    <div style={{
+                      position: 'absolute', bottom: 0, left: 0, right: 0, height: 48,
+                      background: `linear-gradient(transparent, ${T.bgCard})`,
+                    }} />
+                    <div style={{
+                      position: 'absolute', top: 6, left: 0, right: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '0 8px',
+                    }}>
+                      <div style={{ flex: 1, height: 1, background: T.border }} />
+                      <p style={{
+                        fontFamily: T.cinzel, fontSize: 7.5, letterSpacing: '0.38em',
+                        color: T.gold, textTransform: 'uppercase', margin: 0,
+                        background: 'rgba(12,10,8,0.82)', padding: '2px 7px', borderRadius: 1,
+                      }}>METAIS IDEAIS</p>
+                      <div style={{ flex: 1, height: 1, background: T.border }} />
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', gap: 8, justifyContent: 'space-around', flexWrap: 'wrap' }}>
+                  {/* Selected metals */}
+                  <div style={{ padding: '6px 8px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 5 }}>
                     {metais4.map((m, i) => (
-                      <MetalDisc key={i} hex={m.hex} nome={m.nome} />
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{
+                          width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+                          background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.5) 0%, ${m.hex} 40%, rgba(0,0,0,0.3) 100%)`,
+                          border: `1px solid ${T.border}`,
+                        }} />
+                        <p style={{ fontFamily: T.cinzel, fontSize: 7.5, letterSpacing: '0.12em', color: T.goldLt, margin: 0 }}>
+                          {m.nome}
+                        </p>
+                        {m.acabamento && (
+                          <p style={{ fontFamily: T.sans, fontSize: 7, color: T.muted, margin: 0, fontStyle: 'italic' }}>
+                            {m.acabamento}
+                          </p>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>
 
-                {/* CABELO */}
+                {/* ─── TONS DE CABELO ─── */}
                 <div style={{
                   flex: 1.2, border: `1px solid ${T.border}`, borderRadius: 2,
-                  background: T.bgCard, padding: '8px 10px',
+                  background: T.bgCard, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <GoldLineSolid style={{ flex: 1 }} />
-                    <SectionLabel>MELHORES TONS DE CABELO</SectionLabel>
-                    <GoldLineSolid style={{ flex: 1 }} />
-                  </div>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    {cabelo4.map((h, i) => (
-                      <HairSwatch key={i} hex={h.hex} nome={h.nome} />
-                    ))}
-                  </div>
-                  {c.reflexos.length > 0 && (
-                    <div style={{ marginTop: 6 }}>
+                  {/* Library image */}
+                  <div style={{ position: 'relative', height: 130, overflow: 'hidden', flexShrink: 0 }}>
+                    <img
+                      src="/assets/biblioteca-cabelo.png"
+                      crossOrigin="anonymous"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }}
+                    />
+                    <div style={{
+                      position: 'absolute', bottom: 0, left: 0, right: 0, height: 48,
+                      background: `linear-gradient(transparent, ${T.bgCard})`,
+                    }} />
+                    <div style={{
+                      position: 'absolute', top: 6, left: 0, right: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '0 8px',
+                    }}>
+                      <div style={{ flex: 1, height: 1, background: T.border }} />
                       <p style={{
-                        fontFamily: T.cinzel, fontSize: 7, letterSpacing: '0.3em',
-                        color: T.muted, textTransform: 'uppercase', margin: '0 0 4px',
-                      }}>REFLEXOS</p>
-                      <div style={{ display: 'flex', gap: 5 }}>
-                        {c.reflexos.slice(0, 3).map((r, i) => (
-                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <div style={{ width: 18, height: 6, background: r.hex, borderRadius: 10, border: `1px solid ${T.border}` }} />
-                            <p style={{ fontFamily: T.sans, fontSize: 7.5, color: T.muted, margin: 0 }}>{r.nome}</p>
-                          </div>
-                        ))}
-                      </div>
+                        fontFamily: T.cinzel, fontSize: 7.5, letterSpacing: '0.35em',
+                        color: T.gold, textTransform: 'uppercase', margin: 0,
+                        background: 'rgba(12,10,8,0.82)', padding: '2px 7px', borderRadius: 1,
+                      }}>TONS DE CABELO</p>
+                      <div style={{ flex: 1, height: 1, background: T.border }} />
                     </div>
-                  )}
+                  </div>
+                  {/* Selected hair tones + reflexos */}
+                  <div style={{ padding: '6px 8px', flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      {cabelo4.map((h, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1, minWidth: 0 }}>
+                          <div style={{
+                            width: 12, height: 24, borderRadius: '50% 50% 3px 3px / 4px 4px 3px 3px',
+                            background: `linear-gradient(180deg, rgba(255,255,255,0.12) 0%, ${h.hex} 20%, ${h.hex} 70%, rgba(0,0,0,0.35) 100%)`,
+                            border: `1px solid ${T.border}`, flexShrink: 0,
+                          }} />
+                          <p style={{
+                            fontFamily: T.cinzel, fontSize: 6.5, letterSpacing: '0.08em',
+                            color: T.white, margin: 0, lineHeight: 1.2,
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}>{h.nome}</p>
+                        </div>
+                      ))}
+                    </div>
+                    {c.reflexos.length > 0 && (
+                      <div>
+                        <p style={{ fontFamily: T.cinzel, fontSize: 6.5, letterSpacing: '0.3em', color: T.muted, margin: '2px 0', textTransform: 'uppercase' }}>Reflexos</p>
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          {c.reflexos.slice(0, 3).map((r, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <div style={{ width: 22, height: 5, background: r.hex, borderRadius: 10, border: `1px solid ${T.border}` }} />
+                              <p style={{ fontFamily: T.sans, fontSize: 7, color: T.muted, margin: 0 }}>{r.nome}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {/* MAQUIAGEM */}
+                {/* ─── MAQUIAGEM IDEAL ─── */}
                 <div style={{
                   flex: 1.1, border: `1px solid ${T.border}`, borderRadius: 2,
-                  background: T.bgCard, padding: '8px 10px',
+                  background: T.bgCard, overflow: 'hidden', display: 'flex', flexDirection: 'column',
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <GoldLineSolid style={{ flex: 1 }} />
-                    <SectionLabel>MAQUIAGEM IDEAL</SectionLabel>
-                    <GoldLineSolid style={{ flex: 1 }} />
-                  </div>
-                  {[
-                    { label: 'BASE',    dot: maqBaseHex,   items: [typeof c.maquiagem?.base === 'object' ? c.maquiagem.base : { nome: 'Base', hex: maqBaseHex }] },
-                    { label: 'BLUSH',   dot: maqBlush[0]?.hex,   items: maqBlush.slice(0,2) },
-                    { label: 'BATOM',   dot: maqBatom[0]?.hex,   items: maqBatom.slice(0,2) },
-                    { label: 'SOMBRAS', dot: maqSombra[0]?.hex,  items: maqSombra.slice(0,2) },
-                  ].map((row, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                  {/* Library image */}
+                  <div style={{ position: 'relative', height: 130, overflow: 'hidden', flexShrink: 0 }}>
+                    <img
+                      src="/assets/biblioteca-maquiagem.png"
+                      crossOrigin="anonymous"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }}
+                    />
+                    <div style={{
+                      position: 'absolute', bottom: 0, left: 0, right: 0, height: 48,
+                      background: `linear-gradient(transparent, ${T.bgCard})`,
+                    }} />
+                    <div style={{
+                      position: 'absolute', top: 6, left: 0, right: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '0 8px',
+                    }}>
+                      <div style={{ flex: 1, height: 1, background: T.border }} />
                       <p style={{
-                        fontFamily: T.cinzel, fontSize: 7, letterSpacing: '0.3em',
-                        color: T.gold, textTransform: 'uppercase', margin: 0, width: 46, flexShrink: 0,
-                      }}>{row.label}</p>
-                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                        {row.items.map((item, j) => (
-                          <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                            <MakeupDot hex={item.hex || row.dot} size={12} />
-                            <p style={{ fontFamily: T.sans, fontSize: 8, color: T.muted, margin: 0 }}>
-                              {item.nome || item.desc || ''}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
+                        fontFamily: T.cinzel, fontSize: 7.5, letterSpacing: '0.38em',
+                        color: T.gold, textTransform: 'uppercase', margin: 0,
+                        background: 'rgba(12,10,8,0.82)', padding: '2px 7px', borderRadius: 1,
+                      }}>MAQUIAGEM IDEAL</p>
+                      <div style={{ flex: 1, height: 1, background: T.border }} />
                     </div>
-                  ))}
-                  {c.maquiagem?.acabamento && (
-                    <p style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 9, color: T.muted, margin: 0 }}>
-                      Acabamento: {c.maquiagem.acabamento}
-                    </p>
-                  )}
+                  </div>
+                  {/* Selected makeup items */}
+                  <div style={{ padding: '6px 8px', flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {[
+                      { label: 'BASE',    items: [typeof c.maquiagem?.base === 'object' ? c.maquiagem.base : { nome: 'Base', hex: maqBaseHex }] },
+                      { label: 'BLUSH',   items: maqBlush.slice(0, 2) },
+                      { label: 'BATOM',   items: maqBatom.slice(0, 2) },
+                      { label: 'SOMBRAS', items: maqSombra.slice(0, 2) },
+                    ].map((row, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <p style={{ fontFamily: T.cinzel, fontSize: 6.5, letterSpacing: '0.28em', color: T.gold, margin: 0, width: 40, flexShrink: 0, textTransform: 'uppercase' }}>{row.label}</p>
+                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                          {row.items.map((item, j) => (
+                            <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                              <MakeupDot hex={item.hex} size={11} />
+                              <p style={{ fontFamily: T.sans, fontSize: 7.5, color: T.muted, margin: 0 }}>{item.nome || ''}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    {c.maquiagem?.acabamento && (
+                      <p style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 8.5, color: T.muted, margin: '2px 0 0' }}>
+                        Acabamento: {c.maquiagem.acabamento}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -584,11 +667,11 @@ const ResultInfographic = ({ data, image }) => {
                   background: `linear-gradient(135deg,rgba(201,169,110,0.08),rgba(201,169,110,0.03))`,
                   padding: '10px 14px', marginBottom: 8,
                 }}>
-                  <SectionLabel style={{ marginBottom: 4 }}>SUA FORÇA</SectionLabel>
+                  <SectionLabel style={{ marginBottom: 4 }}>SUA FORÇA VISUAL</SectionLabel>
                   <p style={{
                     fontFamily: T.serif, fontSize: 12, color: T.white,
                     margin: 0, lineHeight: 1.5,
-                  }}>{c.forca}</p>
+                  }}>{c.forca_visual}</p>
                 </div>
 
                 <div style={{ textAlign: 'center' }}>

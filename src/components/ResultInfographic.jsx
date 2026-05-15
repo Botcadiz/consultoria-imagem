@@ -7,13 +7,20 @@ const ResultInfographic = ({ data, image }) => {
   const printRef = useRef();
 
   const handleDownloadImage = async () => {
-    const element = printRef.current;
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-    const link = document.createElement('a');
-    link.download = 'consultoria-imagem.jpg';
-    link.href = dataUrl;
-    link.click();
+    if (data?.imageUrl) {
+      const link = document.createElement('a');
+      link.href = data.imageUrl;
+      link.download = 'consultoria-imagem.jpg';
+      link.click();
+    } else {
+      const element = printRef.current;
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const link = document.createElement('a');
+      link.download = 'consultoria-imagem.jpg';
+      link.href = dataUrl;
+      link.click();
+    }
   };
 
   const handleDownloadPDF = async () => {
@@ -31,6 +38,22 @@ const ResultInfographic = ({ data, image }) => {
     pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
     pdf.save('consultoria-imagem.pdf');
   };
+
+  // Display AI-generated image if available
+  if (data?.imageUrl) {
+    return (
+      <div className="infographic-wrapper">
+        <div className="export-actions">
+          <button onClick={handleDownloadImage} className="btn btn-primary">
+            <Download size={18} /> Salvar Imagem
+          </button>
+        </div>
+        <div style={{ maxWidth: '100%', borderRadius: '8px', overflow: 'hidden' }}>
+          <img src={data.imageUrl} alt="Sua Consultoria de Imagem" style={{ width: '100%', height: 'auto', display: 'block' }} />
+        </div>
+      </div>
+    );
+  }
 
   if (!data || !data.colorimetria) return null;
 

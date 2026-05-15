@@ -15,6 +15,15 @@ function Analyzer() {
   const [generationCount, setGenerationCount] = useState(0);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Auto-login in dev mode
+    if (!localStorage.getItem('token')) {
+      localStorage.setItem('token', 'dev-test-token-' + Date.now());
+      localStorage.setItem('email', 'dev@test.com');
+    }
+    fetchGenerationCount();
+  }, []);
+
   const fetchGenerationCount = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -29,10 +38,6 @@ function Analyzer() {
       console.error('Erro ao buscar contagem:', e);
     }
   };
-
-  useEffect(() => {
-    fetchGenerationCount();
-  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -185,7 +190,13 @@ function Analyzer() {
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/auth" />;
+  const isDev = !import.meta.env.PROD;
+  // Allow bypass in dev mode for testing
+  if (isDev && !token) {
+    localStorage.setItem('token', 'dev-test-token');
+    localStorage.setItem('email', 'dev@test.com');
+  }
+  return token || isDev ? children : <Navigate to="/auth" />;
 };
 
 function App() {

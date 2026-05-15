@@ -305,8 +305,7 @@ Lembre-se: PERSONALIZE TUDO baseado na foto real desta pessoa específica. Cada 
           prompt: dallePrompt,
           n: 1,
           size: '1024x1792',
-          quality: 'standard',
-          style: 'vivid'
+          quality: 'standard'
         });
         imageUrl = dalleResponse.data[0].url;
         resultData.imageUrl = imageUrl;
@@ -314,7 +313,7 @@ Lembre-se: PERSONALIZE TUDO baseado na foto real desta pessoa específica. Cada 
       } catch (dalleError) {
         console.error('Erro ao gerar imagem DALL-E:', dalleError.message, dalleError);
         return res.status(500).json({
-          error: `Falha ao gerar imagem: ${dalleError.message || 'Erro desconhecido'}. Verifique sua API key e tente novamente.`
+          error: `Falha ao gerar imagem: ${dalleError.message || 'Erro desconhecido'}. Tente novamente.`
         });
       }
 

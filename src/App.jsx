@@ -163,7 +163,7 @@ function Analyzer() {
                 </div>
               </div>
 
-              {error && <div style={{ color: '#d32f2f', marginBottom: '1rem', fontSize: '0.9rem', textAlign: 'center' }}>{error}</div>}
+              {error && <div style={{ color: '#ff6b6b', marginBottom: '1rem', fontSize: '1rem', textAlign: 'center', padding: '0.85rem 1rem', background: 'rgba(211, 47, 47, 0.1)', border: '1px solid rgba(255, 107, 107, 0.35)', borderRadius: '8px', lineHeight: 1.5 }}>{error}</div>}
 
               <button 
                 className="btn btn-primary" 

@@ -7,20 +7,13 @@ const ResultInfographic = ({ data, image }) => {
   const printRef = useRef();
 
   const handleDownloadImage = async () => {
-    if (data?.imageUrl) {
-      const link = document.createElement('a');
-      link.href = data.imageUrl;
-      link.download = 'consultoria-imagem.jpg';
-      link.click();
-    } else {
-      const element = printRef.current;
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-      const link = document.createElement('a');
-      link.download = 'consultoria-imagem.jpg';
-      link.href = dataUrl;
-      link.click();
-    }
+    const element = printRef.current;
+    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const link = document.createElement('a');
+    link.download = 'consultoria-imagem.jpg';
+    link.href = dataUrl;
+    link.click();
   };
 
   const handleDownloadPDF = async () => {
@@ -39,23 +32,6 @@ const ResultInfographic = ({ data, image }) => {
     pdf.save('consultoria-imagem.pdf');
   };
 
-  // Display AI-generated image if available
-  if (data?.imageUrl) {
-    return (
-      <div className="infographic-wrapper">
-        <div className="export-actions">
-          <button onClick={handleDownloadImage} className="btn btn-primary">
-            <Download size={18} /> Salvar Imagem
-          </button>
-        </div>
-        <div style={{ maxWidth: '600px', margin: '0 auto', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
-          <img src={data.imageUrl} alt="Sua Consultoria de Imagem" style={{ width: '100%', height: 'auto', display: 'block' }} crossOrigin="anonymous" />
-        </div>
-      </div>
-    );
-  }
-
-  // If no image was generated, show error message instead of broken HTML fallback
   if (!data || !data.colorimetria) {
     return (
       <div style={{ textAlign: 'center', padding: '3rem', color: '#d4af37' }}>
@@ -251,7 +227,7 @@ const ResultInfographic = ({ data, image }) => {
                 <p className="box-desc">{colorimetria.coresValorizam?.desc}</p>
                 <div className="mini-swatch-grid">
                   {colorimetria.coresValorizam?.cores?.slice(0, 10).map((c, i) => (
-                    <div key={i} className="mini-swatch" style={{backgroundColor: c}}></div>
+                    <div key={i} className="mini-swatch" style={{backgroundColor: c.hex}}></div>
                   ))}
                 </div>
               </div>
@@ -260,7 +236,7 @@ const ResultInfographic = ({ data, image }) => {
                 <p className="box-desc">{colorimetria.coresApagam?.desc}</p>
                 <div className="mini-swatch-grid opacity-swatch">
                   {colorimetria.coresApagam?.cores?.slice(0, 10).map((c, i) => (
-                    <div key={i} className="mini-swatch" style={{backgroundColor: c}}></div>
+                    <div key={i} className="mini-swatch" style={{backgroundColor: c.hex}}></div>
                   ))}
                 </div>
               </div>

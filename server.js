@@ -114,41 +114,28 @@ app.post('/api/login', authLimiter, async (req, res) => {
   }
 });
 
-// ==================== HISTORY ====================
-app.get('/api/history', authenticateToken, async (req, res) => {
+// ==================== MEU RESULTADO ====================
+// Retorna a única análise do usuário (ou null se ainda não gerou)
+app.get('/api/my-result', authenticateToken, async (req, res) => {
   try {
-    const { data: history, error } = await supabase
+    const { data, error } = await supabase
       .from('history')
       .select('id, image_base64, result_json, created_at')
       .eq('user_id', req.user.id)
-      .order('id', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) return res.json(null);
 
-    const formattedHistory = (history || []).map(item => ({
-      ...item,
-      result_json: typeof item.result_json === 'string' ? JSON.parse(item.result_json) : item.result_json,
-    }));
-    res.json(formattedHistory);
+    res.json({
+      ...data,
+      result_json: typeof data.result_json === 'string' ? JSON.parse(data.result_json) : data.result_json,
+    });
   } catch (error) {
-    console.error('Erro no histórico:', error);
-    res.status(500).json({ error: 'Erro ao buscar histórico.' });
-  }
-});
-
-// ==================== GENERATION COUNT ====================
-app.get('/api/generation-count', authenticateToken, async (req, res) => {
-  try {
-    const { count, error } = await supabase
-      .from('history')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', req.user.id);
-
-    if (error) throw error;
-    res.json({ count: count || 0 });
-  } catch (error) {
-    console.error('Erro ao buscar contagem:', error);
-    res.status(500).json({ error: 'Erro ao buscar contagem.' });
+    console.error('Erro ao buscar resultado:', error);
+    res.status(500).json({ error: 'Erro ao buscar resultado.' });
   }
 });
 
@@ -159,6 +146,19 @@ app.post('/api/analyze', authenticateToken, analyzeLimiter, async (req, res) => 
   try {
     const { imageBase64 } = req.body;
     if (!imageBase64) return res.status(400).json({ error: 'Nenhuma imagem enviada.' });
+
+    // Cada usuário gera apenas UMA análise
+    const { count } = await supabase
+      .from('history')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', req.user.id);
+
+    if (count > 0) {
+      return res.status(409).json({
+        error: 'Você já possui sua consultoria de imagem. Acesse o resultado para baixá-la.',
+        hasResult: true,
+      });
+    }
 
     const prompt = `Você é a Visagê — consultora de imagem master, certificada pelo método Sci/ART e formada nas escolas internacionais de colorimetria 12 Tons. Combine rigor técnico com sensibilidade estética de editora de revista de moda de luxo.
 

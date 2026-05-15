@@ -106,6 +106,41 @@ app.get('/api/generation-count', authenticateToken, async (req, res) => {
 // ==================== ANALYZE ====================
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+const buildDallePrompt = (analysis) => {
+  const {
+    estacao = 'Desconhecida',
+    subtom = '',
+    descricao = '',
+    contraste = '',
+    profundidade = '',
+    intensidade = '',
+    coresQuentes = [],
+    coresFrias = [],
+    metais = [],
+    tonsCabelo = []
+  } = analysis;
+
+  return `Crie uma arte visual profissional de consultoria de imagem com estilo luxuoso, elegante e editorial.
+
+Tema visual: preto/grafite escuro com detalhes dourado claro, bordas douradas finas, aparência premium.
+
+Conteúdo obrigatório:
+- TÍTULO: "SUA COLORIMETRIA PESSOAL"
+- SUBTÍTULO: "${estacao}"
+- Frase: "${descricao}"
+- Card "SUA ANÁLISE" com: Subtom: ${subtom} | Contraste: ${contraste} | Profundidade: ${profundidade} | Intensidade: ${intensidade}
+- Card "CARTELA IDEAL": 10-12 cores personalizadas para ${estacao}
+- Card "CORES QUE TE VALORIZAM": ${coresQuentes.slice(0, 5).join(', ')}
+- Card "CORES QUE TE APAGAM": ${coresFrias.slice(0, 5).join(', ')}
+- Card "METAIS IDEAIS": ${metais.join(', ')}
+- Card "TONS DE CABELO": ${tonsCabelo.join(', ')}
+- Card "MAQUIAGEM IDEAL": mostrando base, blush, batom e sombras harmonizados
+- Card "NEUTROS IDEAIS": cores neutras personalizadas
+- Mensagem final elegante e personalizada
+
+Design: Cards arredondados com bordas douradas finas, tipografia serifada elegante nos títulos, texto limpo e moderno, ícones minimalistas dourados, visual sofisticado e premium, proporção 3:4, fundo escuro, tudo bem organizado e legível.`;
+};
+
 app.post('/api/analyze', authenticateToken, async (req, res) => {
   try {
     const { imageBase64 } = req.body;
@@ -217,6 +252,25 @@ PERSONALIZE a análise baseado COMPLETAMENTE nas características reais da pesso
           ]
         }
       };
+
+      // Generate DALL-E image
+      let imageUrl = null;
+      try {
+        const dallePrompt = buildDallePrompt(aiData);
+        const dalleResponse = await openai.images.generate({
+          model: 'dall-e-3',
+          prompt: dallePrompt,
+          n: 1,
+          size: '1024x1024',
+          quality: 'standard',
+          style: 'vivid'
+        });
+        imageUrl = dalleResponse.data[0].url;
+        resultData.imageUrl = imageUrl;
+      } catch (dalleError) {
+        console.error('Erro ao gerar imagem DALL-E:', dalleError.message);
+        // Continue without image, don't fail the request
+      }
 
       const { error: insertError } = await supabase.from('history').insert({
         user_id: req.user.id,

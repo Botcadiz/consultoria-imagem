@@ -150,7 +150,73 @@ PERSONALIZE a análise baseado COMPLETAMENTE nas características reais da pesso
     let resultData;
     try {
       const jsonStr = content.replace(/```json/g, '').replace(/```/g, '').trim();
-      resultData = JSON.parse(jsonStr);
+      const aiData = JSON.parse(jsonStr);
+
+      // Transform AI response to match frontend structure
+      resultData = {
+        colorimetria: {
+          estacaoCromatica: aiData.estacao || '',
+          estacaoCromaticaSub: aiData.subtom || '',
+          descricaoEstacao: aiData.descricao || '',
+          subtom: {
+            titulo: aiData.subtom || 'Não definido',
+            desc: 'Tom de pele conforme análise'
+          },
+          contraste: {
+            titulo: aiData.contraste || 'Não definido',
+            desc: 'Contraste entre características'
+          },
+          profundidade: {
+            titulo: aiData.profundidade || 'Não definido',
+            desc: 'Profundidade natural da pigmentação'
+          },
+          intensidade: {
+            titulo: aiData.intensidade || 'Não definido',
+            desc: 'Vivacidade das cores ideais'
+          },
+          suaForca: {
+            titulo: aiData.forcaPrincipal || 'Beleza natural'
+          },
+          cartelaIdeal: (aiData.coresQuentes || []).slice(0, 12).map(cor => ({
+            nome: cor,
+            hex: '#d4af37'
+          })),
+          coresValorizam: {
+            desc: 'Cores que realçam sua beleza natural',
+            cores: aiData.coresQuentes || []
+          },
+          coresApagam: {
+            desc: 'Cores que não favorecem tanto',
+            cores: aiData.coresFrias || []
+          },
+          metaisIdeais: (aiData.metais || []).slice(0, 4).map(metal => ({
+            nome: metal,
+            hex: '#d4af37'
+          })),
+          dicaMetais: 'Metais que realçam seu brilho natural',
+          melhoresTonsCabelo: (aiData.tonsCabelo || []).slice(0, 4).map(tom => ({
+            nome: tom,
+            hex: '#c87669'
+          })),
+          dicaCabelo: 'Tons que harmonizam com sua beleza natural',
+          maquiagemIdeal: {
+            base: { hex: '#e5c298', desc: 'Tom quente' },
+            blush: { hex: '#ffbfa3', desc: 'Rose natural' },
+            batom: { hex: '#c87669', desc: 'Tom harmonizado' },
+            sombras: { hex: '#b87333', desc: 'Profundidade' }
+          },
+          neutrosIdeais: [
+            { nome: 'Branco Quente', hex: '#f5f1e8' },
+            { nome: 'Bege', hex: '#d4c5a9' },
+            { nome: 'Cinza Quente', hex: '#a89a8f' },
+            { nome: 'Marrom', hex: '#6b5d52' },
+            { nome: 'Preto', hex: '#1a1a1a' },
+            { nome: 'Cáqui', hex: '#9b8b7e' },
+            { nome: 'Dourado', hex: '#d4af37' },
+            { nome: 'Taupe', hex: '#8b7f78' }
+          ]
+        }
+      };
 
       const { error: insertError } = await supabase.from('history').insert({
         user_id: req.user.id,

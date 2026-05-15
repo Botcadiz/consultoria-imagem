@@ -1,343 +1,298 @@
 import React, { useRef } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { Download, FileText, CheckCircle2, XCircle, Sparkles, Heart } from 'lucide-react';
+import { Download, FileText } from 'lucide-react';
 
 const ResultInfographic = ({ data, image }) => {
   const printRef = useRef();
 
   const handleDownloadImage = async () => {
     const element = printRef.current;
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#f5ebdb' });
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
     const link = document.createElement('a');
-    link.download = 'consultoria-imagem.jpg';
+    link.download = 'visage-consultoria.jpg';
     link.href = dataUrl;
     link.click();
   };
 
   const handleDownloadPDF = async () => {
     const element = printRef.current;
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-    const imgData = canvas.toDataURL('image/jpeg', 0.9);
-    
-    // Configura o PDF para ter o tamanho exato da imagem gerada, assim não corta nada.
+    const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#f5ebdb' });
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
     const pdf = new jsPDF({
       orientation: canvas.width > canvas.height ? 'l' : 'p',
       unit: 'px',
       format: [canvas.width, canvas.height]
     });
-    
     pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
-    pdf.save('consultoria-imagem.pdf');
+    pdf.save('visage-consultoria.pdf');
   };
 
   if (!data || !data.colorimetria) {
     return (
-      <div style={{ textAlign: 'center', padding: '3rem', color: '#d4af37' }}>
-        <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Aguardando geração da imagem...</p>
-        <p style={{ fontSize: '0.9rem', color: '#c8c0b4' }}>Se a imagem não aparecer, tente novamente.</p>
+      <div style={{ textAlign: 'center', padding: '3rem', color: '#8b6244' }}>
+        <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Aguardando análise...</p>
       </div>
     );
   }
 
-  const { colorimetria } = data;
+  const { colorimetria: c } = data;
 
-  // SVG for decorative leaf/botanical element
-  const LeafDecor = ({ className }) => (
-    <svg className={className} viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '80px', opacity: 0.4 }}>
-      <path d="M10 50C20 30 40 20 60 15C50 25 45 40 42 55" stroke="#b8c5b0" strokeWidth="1.5" fill="none"/>
-      <path d="M15 48C25 32 42 24 58 20C48 28 44 42 42 53" stroke="#c5d1be" strokeWidth="1" fill="none"/>
-      <path d="M60 15C70 10 85 12 95 20C80 18 70 25 65 35" stroke="#b8c5b0" strokeWidth="1.5" fill="none"/>
-      <path d="M42 55C45 45 50 35 60 30" stroke="#c5d1be" strokeWidth="1" fill="none"/>
-      <ellipse cx="60" cy="15" rx="3" ry="8" transform="rotate(-20 60 15)" fill="#d5ddd0" opacity="0.5"/>
-      <ellipse cx="30" cy="35" rx="5" ry="12" transform="rotate(15 30 35)" fill="#d5ddd0" opacity="0.3"/>
-      <ellipse cx="80" cy="22" rx="4" ry="10" transform="rotate(-30 80 22)" fill="#d5ddd0" opacity="0.3"/>
-    </svg>
+  // Decorative divider with center ornament
+  const Divider = () => (
+    <div className="ed-divider">
+      <span className="ed-divider-line"></span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L14 10L22 12L14 14L12 22L10 14L2 12L10 10L12 2Z" fill="#9a6a4a" />
+      </svg>
+      <span className="ed-divider-line"></span>
+    </div>
   );
 
-  // Sparkle/star SVG decoration
-  const StarDecor = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.35 }}>
-      <path d="M12 2L13.5 9.5L21 8L14.5 12L18 19L12 14.5L6 19L9.5 12L3 8L10.5 9.5L12 2Z" fill="#c5b89a" />
+  // Botanical SVG for footer
+  const Botanical = () => (
+    <svg width="60" height="50" viewBox="0 0 60 50" fill="none">
+      <path d="M30 45 Q20 30 12 18" stroke="#9a6a4a" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+      <path d="M30 45 Q40 30 48 18" stroke="#9a6a4a" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+      <ellipse cx="15" cy="25" rx="3" ry="6" transform="rotate(-25 15 25)" fill="#b88460" opacity="0.7" />
+      <ellipse cx="22" cy="33" rx="2.5" ry="5" transform="rotate(-15 22 33)" fill="#c89978" opacity="0.6" />
+      <ellipse cx="45" cy="25" rx="3" ry="6" transform="rotate(25 45 25)" fill="#b88460" opacity="0.7" />
+      <ellipse cx="38" cy="33" rx="2.5" ry="5" transform="rotate(15 38 33)" fill="#c89978" opacity="0.6" />
+      <circle cx="30" cy="12" r="2.5" fill="#9a6a4a" />
     </svg>
   );
 
   return (
-    <div className="infographic-wrapper">
+    <div className="ed-wrapper">
       <div className="export-actions">
         <button onClick={handleDownloadImage} className="btn btn-primary">
           <Download size={18} /> Salvar Imagem
         </button>
-        <button onClick={handleDownloadPDF} className="btn btn-outline" style={{ background: '#fff' }}>
+        <button onClick={handleDownloadPDF} className="btn btn-outline">
           <FileText size={18} /> Baixar PDF
         </button>
       </div>
 
-      <div className="infographic poster-infographic" ref={printRef}>
-        <div className="poster-layout">
-          
-          {/* LEFT COLUMN: Photo + Sidebar Analysis */}
-          <div className="poster-left-col">
-            <div className="poster-photo-container">
-              <img src={image} alt="Sua Foto" className="poster-photo" />
+      <div className="ed-poster" ref={printRef}>
+        {/* ======= HERO HEADER ======= */}
+        <header className="ed-header">
+          <p className="ed-brand">V I S A G Ê</p>
+          <p className="ed-tagline">CONSULTORIA DE IMAGEM PERSONALIZADA</p>
+          <Divider />
+          <p className="ed-eyebrow">SUA COLORIMETRIA PESSOAL</p>
+          <h1 className="ed-season">{c.estacaoCromatica}</h1>
+          {c.estacaoCromaticaSub && (
+            <p className="ed-subseason">{c.estacaoCromaticaSub}</p>
+          )}
+          <p className="ed-description">"{c.descricaoEstacao}"</p>
+        </header>
+
+        {/* ======= PHOTO + DIAGNOSIS GRID ======= */}
+        <section className="ed-hero-section">
+          <div className="ed-photo-frame">
+            <div className="ed-photo-inner">
+              <img src={image} alt="Cliente" />
             </div>
-
-            <div className="sidebar-box">
-              <h3 className="sidebar-title"><Sparkles size={14} /> Sua Análise</h3>
-              
-              {/* Subtom */}
-              <div className="sidebar-item with-icon">
-                <div className="si-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="#d4af37" strokeWidth="1.5"/>
-                    <path d="M12 6C12 6 8 10 8 14C8 16 10 18 12 18C14 18 16 16 16 14C16 10 12 6 12 6Z" fill="#d4af37" opacity="0.55"/>
-                  </svg>
-                </div>
-                <div className="si-content">
-                  <h4>SUBTOM DA PELE</h4>
-                  <strong>{colorimetria.subtom?.titulo || (typeof colorimetria.subtom === 'string' ? colorimetria.subtom : 'N/A')}</strong>
-                  <p>{colorimetria.subtom?.desc}</p>
-                </div>
-              </div>
-
-              {/* Contraste */}
-              <div className="sidebar-item with-icon">
-                <div className="si-icon"><div className="icon-half-circle"></div></div>
-                <div className="si-content">
-                  <h4>CONTRASTE</h4>
-                  <strong>{colorimetria.contraste?.titulo || (typeof colorimetria.contraste === 'string' ? colorimetria.contraste : 'N/A')}</strong>
-                  <p>{colorimetria.contraste?.desc}</p>
-                </div>
-              </div>
-
-              {/* Profundidade */}
-              <div className="sidebar-item with-icon">
-                <div className="si-icon"><div className="icon-gradient-circle"></div></div>
-                <div className="si-content">
-                  <h4>PROFUNDIDADE</h4>
-                  <strong>{colorimetria.profundidade?.titulo || (typeof colorimetria.profundidade === 'string' ? colorimetria.profundidade : 'N/A')}</strong>
-                  <p>{colorimetria.profundidade?.desc}</p>
-                </div>
-              </div>
-
-              {/* Intensidade */}
-              <div className="sidebar-item with-icon">
-                <div className="si-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="5" fill="#d4af37" fillOpacity="0.55" stroke="#d4af37" strokeWidth="1.5"/>
-                    <line x1="12" y1="2" x2="12" y2="6" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="12" y1="18" x2="12" y2="22" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="2" y1="12" x2="6" y2="12" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="18" y1="12" x2="22" y2="12" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                </div>
-                <div className="si-content">
-                  <h4>INTENSIDADE</h4>
-                  <strong>{colorimetria.intensidade?.titulo || (typeof colorimetria.intensidade === 'string' ? colorimetria.intensidade : 'N/A')}</strong>
-                  <p>{colorimetria.intensidade?.desc}</p>
-                </div>
-              </div>
-
-              {/* Formato do Rosto */}
-              {colorimetria.formatoRosto && (
-                <div className="sidebar-item with-icon">
-                  <div className="si-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <ellipse cx="12" cy="12" rx="7" ry="9" stroke="#d4af37" strokeWidth="1.5" fill="none"/>
-                      <circle cx="12" cy="11" r="1" fill="#d4af37"/>
-                    </svg>
-                  </div>
-                  <div className="si-content">
-                    <h4>FORMATO DO ROSTO</h4>
-                    <strong>{colorimetria.formatoRosto?.titulo}</strong>
-                    <p>{colorimetria.formatoRosto?.desc}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Impressão Visual */}
-              {colorimetria.impressaoVisual && (
-                <div className="sidebar-item with-icon">
-                  <div className="si-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z" stroke="#d4af37" strokeWidth="1.5"/>
-                      <circle cx="12" cy="12" r="3" stroke="#d4af37" strokeWidth="1.5"/>
-                    </svg>
-                  </div>
-                  <div className="si-content">
-                    <h4>IMPRESSÃO VISUAL</h4>
-                    <p style={{ marginTop: '0.25rem' }}>{colorimetria.impressaoVisual}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Estação Cromática highlight box */}
-              <div className="sidebar-highlight-box">
-                <p className="sh-title">ESTAÇÃO CROMÁTICA</p>
-                <h2 className="sh-cursive">{colorimetria.estacaoCromatica}</h2>
-                <p className="sh-sub">{colorimetria.estacaoCromaticaSub || ''}</p>
-                <p className="sh-desc">{colorimetria.descricaoEstacao}</p>
-              </div>
-
-              {/* Seus Pontos Fortes */}
-              {colorimetria.suaForca && (
-                <div className="sidebar-force-box">
-                  <p className="sf-title"><Heart size={14} /> SUA FORÇA</p>
-                  <strong>{colorimetria.suaForca?.titulo}</strong>
-                  {colorimetria.suaForca?.textoSecundario && (
-                    <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#c8c0b4' }}>
-                      {colorimetria.suaForca.textoSecundario}
-                    </p>
-                  )}
-                </div>
-              )}
+            <div className="ed-photo-label">
+              <p className="ed-photo-label-eyebrow">ANÁLISE EXCLUSIVA</p>
+              <p className="ed-photo-label-text">{c.impressaoVisual}</p>
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Titles, Palettes, Content */}
-          <div className="poster-right-col">
-            
-            {/* Top Header */}
-            <div className="poster-header">
-              <p className="poster-super-title">SUA COLORIMETRIA PESSOAL</p>
-              <h1 className="poster-title">{colorimetria.estacaoCromatica}</h1>
-              <div style={{textAlign:'center'}}>
-                <p className="poster-cursive">{colorimetria.descricaoEstacao}</p>
+          <div className="ed-diagnosis-grid">
+            <div className="ed-diag-card">
+              <p className="ed-diag-label">SUBTOM DA PELE</p>
+              <p className="ed-diag-value">{c.subtom?.titulo}</p>
+              <p className="ed-diag-desc">{c.subtom?.desc}</p>
+            </div>
+            <div className="ed-diag-card">
+              <p className="ed-diag-label">CONTRASTE</p>
+              <p className="ed-diag-value">{c.contraste?.titulo}</p>
+              <p className="ed-diag-desc">{c.contraste?.desc}</p>
+            </div>
+            <div className="ed-diag-card">
+              <p className="ed-diag-label">PROFUNDIDADE</p>
+              <p className="ed-diag-value">{c.profundidade?.titulo}</p>
+              <p className="ed-diag-desc">{c.profundidade?.desc}</p>
+            </div>
+            <div className="ed-diag-card">
+              <p className="ed-diag-label">INTENSIDADE</p>
+              <p className="ed-diag-value">{c.intensidade?.titulo}</p>
+              <p className="ed-diag-desc">{c.intensidade?.desc}</p>
+            </div>
+            <div className="ed-diag-card">
+              <p className="ed-diag-label">FORMATO DO ROSTO</p>
+              <p className="ed-diag-value">{c.formatoRosto?.titulo}</p>
+              <p className="ed-diag-desc">{c.formatoRosto?.desc}</p>
+            </div>
+            <div className="ed-diag-card ed-diag-strength">
+              <p className="ed-diag-label">SUA FORÇA</p>
+              <p className="ed-diag-value ed-diag-strength-value">{c.suaForca?.titulo}</p>
+              <p className="ed-diag-desc">{c.suaForca?.textoPrincipal}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ======= CARTELA IDEAL ======= */}
+        <section className="ed-section">
+          <div className="ed-section-header">
+            <p className="ed-section-num">01</p>
+            <h2 className="ed-section-title">SUA CARTELA IDEAL</h2>
+            <p className="ed-section-subtitle">As 12 cores que potencializam sua beleza natural</p>
+          </div>
+          <div className="ed-cartela-grid">
+            {c.cartelaIdeal?.slice(0, 12).map((color, i) => (
+              <div key={i} className="ed-swatch">
+                <div className="ed-swatch-color" style={{ background: color.hex }}></div>
+                <p className="ed-swatch-name">{color.nome}</p>
+                <p className="ed-swatch-hex">{color.hex}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ======= VALORIZAM vs APAGAM ======= */}
+        <section className="ed-section">
+          <div className="ed-section-header">
+            <p className="ed-section-num">02</p>
+            <h2 className="ed-section-title">O QUE USAR E O QUE EVITAR</h2>
+          </div>
+          <div className="ed-compare-grid">
+            <div className="ed-compare-card ed-compare-yes">
+              <div className="ed-compare-header">
+                <span className="ed-compare-tag ed-tag-yes">USE</span>
+                <h3 className="ed-compare-title">CORES QUE TE VALORIZAM</h3>
+              </div>
+              <p className="ed-compare-desc">{c.coresValorizam?.desc}</p>
+              <div className="ed-mini-grid">
+                {c.coresValorizam?.cores?.slice(0, 10).map((color, i) => (
+                  <div key={i} className="ed-mini-swatch" style={{ background: color.hex }} title={color.nome}></div>
+                ))}
               </div>
             </div>
+            <div className="ed-compare-card ed-compare-no">
+              <div className="ed-compare-header">
+                <span className="ed-compare-tag ed-tag-no">EVITE</span>
+                <h3 className="ed-compare-title">CORES QUE TE APAGAM</h3>
+              </div>
+              <p className="ed-compare-desc">{c.coresApagam?.desc}</p>
+              <div className="ed-mini-grid">
+                {c.coresApagam?.cores?.slice(0, 10).map((color, i) => (
+                  <div key={i} className="ed-mini-swatch" style={{ background: color.hex }} title={color.nome}></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
 
-            {/* Cartela Ideal */}
-            <div className="poster-section">
-              <div className="section-divider"><span>SUA CARTELA IDEAL</span></div>
-              <div className="cartela-grid-12">
-                {colorimetria.cartelaIdeal?.slice(0, 12).map((c, i) => (
-                  <div key={i} className="color-swatch-box">
-                    <div className="color-swatch" style={{backgroundColor: c.hex}}></div>
-                    <span>{c.nome}</span>
+        {/* ======= METAIS + CABELO + MAQUIAGEM ======= */}
+        <section className="ed-section">
+          <div className="ed-section-header">
+            <p className="ed-section-num">03</p>
+            <h2 className="ed-section-title">SEU GUIA DE ESTILO</h2>
+          </div>
+          <div className="ed-style-grid">
+            {/* METAIS */}
+            <div className="ed-style-card">
+              <p className="ed-style-eyebrow">ACABAMENTOS</p>
+              <h4 className="ed-style-title">METAIS IDEAIS</h4>
+              <p className="ed-style-desc">{c.dicaMetais}</p>
+              <div className="ed-metal-row">
+                {c.metaisIdeais?.slice(0, 4).map((m, i) => (
+                  <div key={i} className="ed-metal">
+                    <div className="ed-metal-disc" style={{
+                      background: `radial-gradient(circle at 35% 30%, #fff7e6 0%, ${m.hex} 40%, ${m.hex} 70%, rgba(0,0,0,0.25) 100%)`
+                    }}></div>
+                    <p className="ed-metal-name">{m.nome}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Valorizam e Apagam */}
-            <div className="poster-split-section">
-              <div className="poster-box success-box">
-                <h4 className="box-header"><CheckCircle2 size={16} color="#7ac479" /> CORES QUE TE VALORIZAM</h4>
-                <p className="box-desc">{colorimetria.coresValorizam?.desc}</p>
-                <div className="mini-swatch-grid">
-                  {colorimetria.coresValorizam?.cores?.slice(0, 10).map((c, i) => (
-                    <div key={i} className="mini-swatch" style={{backgroundColor: c.hex}}></div>
-                  ))}
-                </div>
-              </div>
-              <div className="poster-box danger-box">
-                <h4 className="box-header"><XCircle size={16} color="#ff6b6b" /> CORES QUE TE APAGAM</h4>
-                <p className="box-desc">{colorimetria.coresApagam?.desc}</p>
-                <div className="mini-swatch-grid opacity-swatch">
-                  {colorimetria.coresApagam?.cores?.slice(0, 10).map((c, i) => (
-                    <div key={i} className="mini-swatch" style={{backgroundColor: c.hex}}></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom 3 Columns: Metais, Cabelo, Maquiagem */}
-            <div className="poster-triple-section">
-              {/* Metais */}
-              <div className="poster-box">
-                <h4 className="box-header"><Sparkles size={14} style={{marginRight: '4px'}}/> METAIS IDEAIS</h4>
-                <p className="box-desc" style={{fontSize: '0.7rem'}}>{colorimetria.dicaMetais || 'Metais que realçam seu brilho natural.'}</p>
-                <div className="metal-flex">
-                  {colorimetria.metaisIdeais?.slice(0, 4).map((m, i) => (
-                    <div key={i} className="metal-swatch-box">
-                      <div className="metal-circle" style={{'--m-color': m.hex}}></div>
-                      <span>{m.nome}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Cabelo */}
-              <div className="poster-box">
-                <h4 className="box-header">✂ MELHORES TONS DE CABELO</h4>
-                <p className="box-desc" style={{fontSize: '0.7rem'}}>{colorimetria.dicaCabelo || 'Tons que harmonizam com sua beleza natural.'}</p>
-                <div className="hair-flex">
-                  {colorimetria.melhoresTonsCabelo?.slice(0, 4).map((c, i) => (
-                    <div key={i} className="hair-swatch-box">
-                      <div className="hair-color-block" style={{backgroundColor: c.hex}}></div>
-                      <span>{c.nome}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Maquiagem */}
-              <div className="poster-box">
-                <h4 className="box-header">✦ MAQUIAGEM IDEAL</h4>
-                <div className="makeup-list">
-                  <div className="makeup-item">
-                    <div className="makeup-icon" style={{ background: colorimetria.maquiagemIdeal?.base?.hex || '#e5c298' }}></div>
-                    <div className="makeup-text">
-                      <strong>BASE</strong><br/>{colorimetria.maquiagemIdeal?.base?.desc}
-                    </div>
-                  </div>
-                  <div className="makeup-item">
-                    <div className="makeup-icon" style={{ background: colorimetria.maquiagemIdeal?.blush?.hex || '#ffbfa3' }}></div>
-                    <div className="makeup-text">
-                      <strong>BLUSH</strong><br/>{colorimetria.maquiagemIdeal?.blush?.desc}
-                    </div>
-                  </div>
-                  <div className="makeup-item">
-                    <div className="makeup-icon" style={{ background: colorimetria.maquiagemIdeal?.batom?.hex || '#c87669' }}></div>
-                    <div className="makeup-text">
-                      <strong>BATOM</strong><br/>{colorimetria.maquiagemIdeal?.batom?.desc}
-                    </div>
-                  </div>
-                  <div className="makeup-item">
-                    <div className="makeup-icon" style={{ background: colorimetria.maquiagemIdeal?.sombras?.hex || '#b87333' }}></div>
-                    <div className="makeup-text">
-                      <strong>SOMBRAS</strong><br/>{colorimetria.maquiagemIdeal?.sombras?.desc}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Neutros */}
-            <div className="poster-section" style={{marginTop: '1.5rem'}}>
-              <div className="section-divider"><span>NEUTROS IDEAIS</span></div>
-              <div className="cartela-grid-8">
-                {colorimetria.neutrosIdeais?.slice(0, 8).map((c, i) => (
-                  <div key={i} className="color-swatch-box">
-                    <div className="color-swatch" style={{backgroundColor: c.hex, borderRadius: '4px', height: '50px'}}></div>
-                    <span style={{marginTop: '0.25rem'}}>{c.nome}</span>
+            {/* CABELO */}
+            <div className="ed-style-card">
+              <p className="ed-style-eyebrow">CAPILAR</p>
+              <h4 className="ed-style-title">TONS DE CABELO</h4>
+              <p className="ed-style-desc">{c.dicaCabelo}</p>
+              <div className="ed-hair-row">
+                {c.melhoresTonsCabelo?.slice(0, 4).map((h, i) => (
+                  <div key={i} className="ed-hair">
+                    <div className="ed-hair-strand" style={{
+                      background: `linear-gradient(180deg, ${h.hex} 0%, ${h.hex} 40%, rgba(0,0,0,0.25) 100%)`
+                    }}></div>
+                    <p className="ed-hair-name">{h.nome}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Footer Message — three-column layout */}
-            <div className="poster-footer">
-              <div className="pf-decor-left">
-                Você já tem tudo<br/>que precisa para brilhar!
-              </div>
-              <div className="pf-main">
-                <p className="pf-cursive-msg">
-                  {colorimetria.mensagemFinal || 'Quando você usa as cores certas, sua beleza aparece com mais leveza, confiança e naturalidade.'}
-                  <strong>Seja sua melhor versão todos os dias!</strong>
-                </p>
-              </div>
-              <div className="pf-decor-right">
-                <div className="pf-remember-title"><Heart size={14} fill="#d4af37" /> LEMBRE-SE</div>
-                <div className="pf-remember-text">
-                  Não se trata de regras e sim de escolhas que te fazem bem e te representam.
-                </div>
-              </div>
+            {/* MAQUIAGEM */}
+            <div className="ed-style-card">
+              <p className="ed-style-eyebrow">BEAUTY</p>
+              <h4 className="ed-style-title">MAQUIAGEM IDEAL</h4>
+              <ul className="ed-makeup-list">
+                <li className="ed-makeup-item">
+                  <span className="ed-makeup-dot" style={{ background: c.maquiagemIdeal?.base?.hex }}></span>
+                  <div>
+                    <strong>BASE</strong>
+                    <span>{c.maquiagemIdeal?.base?.desc}</span>
+                  </div>
+                </li>
+                <li className="ed-makeup-item">
+                  <span className="ed-makeup-dot" style={{ background: c.maquiagemIdeal?.blush?.hex }}></span>
+                  <div>
+                    <strong>BLUSH</strong>
+                    <span>{c.maquiagemIdeal?.blush?.desc}</span>
+                  </div>
+                </li>
+                <li className="ed-makeup-item">
+                  <span className="ed-makeup-dot" style={{ background: c.maquiagemIdeal?.batom?.hex }}></span>
+                  <div>
+                    <strong>BATOM</strong>
+                    <span>{c.maquiagemIdeal?.batom?.desc}</span>
+                  </div>
+                </li>
+                <li className="ed-makeup-item">
+                  <span className="ed-makeup-dot" style={{ background: c.maquiagemIdeal?.sombras?.hex }}></span>
+                  <div>
+                    <strong>SOMBRAS</strong>
+                    <span>{c.maquiagemIdeal?.sombras?.desc}</span>
+                  </div>
+                </li>
+              </ul>
             </div>
-
           </div>
-        </div>
+        </section>
+
+        {/* ======= NEUTROS ======= */}
+        <section className="ed-section">
+          <div className="ed-section-header">
+            <p className="ed-section-num">04</p>
+            <h2 className="ed-section-title">NEUTROS IDEAIS</h2>
+            <p className="ed-section-subtitle">Sua base curinga para o dia a dia</p>
+          </div>
+          <div className="ed-neutros-grid">
+            {c.neutrosIdeais?.slice(0, 8).map((n, i) => (
+              <div key={i} className="ed-neutro">
+                <div className="ed-neutro-color" style={{ background: n.hex }}></div>
+                <p className="ed-neutro-name">{n.nome}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ======= FOOTER ======= */}
+        <footer className="ed-footer">
+          <Botanical />
+          <p className="ed-footer-message">{c.mensagemFinal}</p>
+          <p className="ed-footer-tagline">
+            <em>Mais confiança, mais leveza, </em>
+            <strong>mais você.</strong>
+          </p>
+          <Divider />
+          <p className="ed-footer-signature">V I S A G Ê &nbsp;·&nbsp; CONSULTORIA DE IMAGEM</p>
+        </footer>
       </div>
     </div>
   );

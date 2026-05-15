@@ -82,7 +82,9 @@ export default function History() {
                 <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginBottom: '0.5rem' }}>
                   {new Date(item.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
                 </p>
-                <h4 style={{ color: 'var(--color-primary)' }}>{item.result_json.colorimetria.estacaoCromatica}</h4>
+                <h4 style={{ color: 'var(--color-primary)' }}>
+                  {item.result_json.colorimetria?.estacao || item.result_json.colorimetria?.estacaoCromatica || 'Colorimetria'}
+                </h4>
               </div>
             </div>
           ))}

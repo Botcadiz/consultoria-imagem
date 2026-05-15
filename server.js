@@ -111,111 +111,87 @@ app.post('/api/analyze', authenticateToken, async (req, res) => {
     const { imageBase64 } = req.body;
     if (!imageBase64) return res.status(400).json({ error: 'Nenhuma imagem enviada.' });
 
-    const prompt = `Você é a Visagê — uma consultora de imagem master, certificada pelo método Sci\\ART e formada nas escolas internacionais de colorimetria 12 Tons e Color Me Beautiful. Você combina o rigor técnico da análise cromática profissional com a sensibilidade estética de uma editora de moda de revista de luxo.
+    const prompt = `Você é a Visagê — consultora de imagem master, certificada pelo método Sci/ART e formada nas escolas internacionais de colorimetria 12 Tons. Combine rigor técnico com sensibilidade estética de editora de revista de moda de luxo.
 
-MISSÃO:
-Examine a fotografia desta cliente com profundidade técnica de uma consultoria presencial de R$ 2.500 e devolva um diagnóstico de colorimetria e visagismo que ela vai querer salvar, imprimir e mostrar para as amigas — porque é específico, lisonjeiro, sofisticado e tecnicamente correto.
-
-PROTOCOLO DE ANÁLISE (siga nesta ordem):
-
-1) OBSERVAR a pessoa real na foto, identificando:
-   - Tom verdadeiro da pele (descontando filtro/luz ambiente)
-   - Subtom: quente (amarelo/dourado/pêssego), frio (rosado/azulado/oliva-azulado), neutro (balanceado), oliva (esverdeado/acinzentado)
-   - Profundidade da pele: clara, média ou profunda
-   - Cor natural e brilho dos olhos (íris e esclera)
-   - Cor natural do cabelo e seu contraste com a pele
-   - Contraste interno geral (alto/médio/baixo)
-   - Saturação natural (suave/média/brilhante)
-   - Estrutura óssea facial e formato do rosto
-
-2) DIAGNOSTICAR a estação cromática dentro do sistema de 12 tons (não use apenas as 4 básicas):
+PROTOCOLO DE ANÁLISE:
+1. Observe o rosto real: subtom da pele, contraste pele/cabelo/olhos, profundidade, intensidade, saturação natural, estrutura óssea e formato do rosto.
+2. Diagnostique a estação cromática dentre as 12:
    PRIMAVERAS: Primavera Brilhante, Primavera Quente, Primavera Clara
    VERÕES: Verão Claro, Verão Suave, Verão Frio
    OUTONOS: Outono Suave, Outono Quente, Outono Profundo
    INVERNOS: Inverno Frio, Inverno Brilhante, Inverno Profundo
+3. Cada análise é ÚNICA — nunca recicle paletas ou diagnósticos.
 
-3) PERSONALIZAR cada elemento da paleta a partir do diagnóstico real — JAMAIS reciclar a mesma paleta. Cada análise é única.
-
-TOM DE VOZ:
-- Editorial, sofisticado, próximo de uma stylist de revista de moda.
-- Português brasileiro, elegante, sem clichês ("brilho único", "essência especial" — proibido).
-- Textos curtos, precisos, em voz ativa. Cada frase precisa entregar valor.
-- Trate a cliente por "você", nunca pelo nome.
+TOM DE VOZ: editorial, sofisticado, português brasileiro elegante, sem clichês. Textos curtos e precisos. Trate a cliente por "você".
 
 RETORNE EXCLUSIVAMENTE este JSON (sem markdown, sem texto fora do JSON):
 
 {
-  "estacao": "Nome da estação em MAIÚSCULAS (ex: PRIMAVERA BRILHANTE)",
-  "subEstacao": "Variação dentro da estação (ex: Primavera Brilhante Pura, transição para Inverno Brilhante)",
-  "descricao": "Uma frase editorial, italica e poética sobre a harmonia cromática dela (ex: 'Sua beleza floresce em cores quentes, claras e luminosas.')",
-  "subtom": { "titulo": "Quente / Frio / Neutro / Oliva", "desc": "2-6 palavras com a nuance exata (ex: 'dourado com base pêssego')" },
-  "contraste": { "titulo": "Alto / Médio para alto / Médio / Médio para baixo / Baixo", "desc": "Uma linha sobre a relação pele-cabelo-olhos (ex: 'Harmonia entre pele, cabelos e olhos')" },
-  "profundidade": { "titulo": "Clara / Clara a média / Média / Média a profunda / Profunda", "desc": "Uma linha curta (ex: 'Traços suaves e iluminados')" },
-  "intensidade": { "titulo": "Suave / Média / Brilhante / Alta e brilhante", "desc": "Uma linha (ex: 'Cores vivas e luminosas te valorizam')" },
-  "formatoRosto": { "titulo": "Oval / Redondo / Quadrado / Coração / Diamante / Retangular / Oval levemente coração", "desc": "Uma linha curta (ex: 'Equilíbrio entre suavidade e definição')" },
-  "impressaoVisual": "Uma linha que descreve a impressão estética geral (ex: 'Jovem, radiante e delicada. Traços harmoniosos com expressão marcante.')",
-  "cartelaIdeal": [
-    { "nome": "PÊSSEGO", "hex": "#f4a87c" },
-    { "nome": "CORAL", "hex": "#e07856" }
+  "estacao": "NOME DA ESTAÇÃO EM MAIÚSCULAS",
+  "subtipo": "Variação dentro da estação (ex: Outono Quente Puro)",
+  "frase_principal": "Frase poética curta sobre a harmonia cromática (ex: Cores que celebram sua vitalidade natural.)",
+  "subtom": "Descrição precisa ex: Quente dourado — base pêssego com reflexos âmbar",
+  "contraste": "Nível e nuance ex: Médio — harmonia suave entre pele clara e cabelos castanhos",
+  "profundidade": "Nível ex: Clara a média — traços luminosos com presença discreta",
+  "intensidade": "Nível ex: Suave — cores naturais e de média saturação te valorizam",
+  "formato_rosto": "Forma ex: Oval — linha da mandíbula suave, testa ligeiramente mais larga",
+  "impressao_visual": "Impressão global ex: Elegante e acolhedora. Traços suaves com expressão marcante.",
+  "cartela_ideal": [
+    { "nome": "PÊSSEGO", "hex": "#f4a87c" }
   ],
-  "coresValorizam": {
-    "desc": "Uma linha explicando por que essas cores funcionam (ex: 'Cores quentes, claras e vibrantes realçam sua luz natural e deixam você radiante.')",
-    "cores": [
-      { "nome": "Mostarda", "hex": "#d4a017" }
-    ]
-  },
-  "coresApagam": {
-    "desc": "Uma linha explicando por que essas cores não favorecem (ex: 'Cores frias, escuras e acinzentadas apagam seu brilho natural.')",
-    "cores": [
-      { "nome": "Cinza Frio", "hex": "#808a93" }
-    ]
-  },
-  "metaisIdeais": [
-    { "nome": "OURO AMARELO", "hex": "#d4af37" },
-    { "nome": "OURO ROSÉ", "hex": "#b76e79" }
+  "cores_valorizam": [
+    { "nome": "Coral", "hex": "#e07856" }
   ],
-  "dicaMetais": "Frase curta com a regra de ouro dos metais para esta estação (ex: 'Metais quentes e polidos trazem luz ao seu rosto.')",
-  "melhoresTonsCabelo": [
-    { "nome": "MEL DOURADO", "hex": "#c89968" },
-    { "nome": "CASTANHO CLARO", "hex": "#8b6240" }
+  "cores_apagam": [
+    { "nome": "Cinza Frio", "hex": "#808a93" }
   ],
-  "dicaCabelo": "Frase curta com a recomendação técnica (ex: 'Tons quentes e iluminados harmonizam com seu subtom. Mechas sutis e reflexos dourados trazem ainda mais brilho e dimensão.')",
-  "maquiagemIdeal": {
-    "base": { "hex": "#e5c298", "desc": "Descrição curta do undertone da base (ex: 'bege claro quente ou dourado')" },
-    "blush": { "hex": "#ffbfa3", "desc": "Tons recomendados (ex: 'pêssego, coral ou damasco')" },
-    "batom": { "hex": "#c87669", "desc": "Tons recomendados (ex: 'coral, pêssego, rosa quente ou nude rosado')" },
-    "sombras": { "hex": "#b87333", "desc": "Tons recomendados (ex: 'champanhe, dourado, cobre, pêssego e marrom claro')" }
-  },
-  "neutrosIdeais": [
-    { "nome": "MARFIM QUENTE", "hex": "#f3e5cf" },
-    { "nome": "BEGE AREIA", "hex": "#d9be9a" }
+  "metais": [
+    { "nome": "OURO AMARELO LUMINOSO", "hex": "#d4af37", "acabamento": "polido" }
   ],
-  "suaForca": {
-    "titulo": "Duas a três palavras em maiúsculas que sintetizam sua qualidade dominante (ex: 'LUMINOSIDADE & VITALIDADE', 'PROFUNDIDADE & MAGNETISMO', 'SUAVIDADE & FRESCOR')",
-    "textoPrincipal": "Uma frase curta de afirmação (ex: 'Seu brilho natural encanta!')",
-    "textoSecundario": "Frase complementar sobre o efeito visual (ex: 'Você irradia leveza, frescor e elegância.')"
+  "tons_cabelo": [
+    { "nome": "MEL DOURADO", "hex": "#c89968" }
+  ],
+  "reflexos": [
+    { "nome": "DOURADO SUAVE", "hex": "#c8a840" }
+  ],
+  "maquiagem": {
+    "base": { "nome": "BEGE DOURADO", "hex": "#e5c298" },
+    "blush": [
+      { "nome": "DAMASCO", "hex": "#e8a87c" },
+      { "nome": "PÊSSEGO ROSADO", "hex": "#f4b8a0" }
+    ],
+    "batom": [
+      { "nome": "NUDE PÊSSEGO", "hex": "#d4956a" },
+      { "nome": "CORAL MELANCIA", "hex": "#d4705e" }
+    ],
+    "sombras": [
+      { "nome": "CHAMPAGNE", "hex": "#f5e6c8" },
+      { "nome": "DOURADO SUAVE", "hex": "#c8a96e" }
+    ],
+    "acabamento": "cetim luminoso"
   },
-  "mensagemFinal": "Frase de fechamento editorial, curta e marcante (ex: 'Quando você usa as cores certas, sua essência se destaca.')"
+  "neutros": [
+    { "nome": "MARFIM QUENTE", "hex": "#f3e5cf" }
+  ],
+  "forca_visual": "LUMINOSIDADE & VITALIDADE — Frase de 1-2 linhas sobre o impacto visual desta pessoa.",
+  "mensagem_final": "Frase de fechamento curta e marcante (ex: Quando você usa as cores certas, sua presença se torna inesquecível.)"
 }
 
 REQUISITOS NÃO-NEGOCIÁVEIS:
-- cartelaIdeal: EXATAMENTE 12 cores, cada uma com nome em MAIÚSCULAS curto (1-2 palavras) e hex preciso
-- coresValorizam.cores: EXATAMENTE 10 cores, nomes curtos, hex coerentes com a estação
-- coresApagam.cores: EXATAMENTE 10 cores que tecnicamente atrapalham (frias para quentes, brilhantes para suaves, etc.)
-- metaisIdeais: EXATAMENTE 4 metais (ex: Ouro Amarelo, Ouro Rosé, Ouro Champagne, Dourado Polido)
-- melhoresTonsCabelo: EXATAMENTE 4 tons com hex realistas de cabelo humano
-- neutrosIdeais: EXATAMENTE 8 neutros (não brancos puros — varie em quente/frio conforme a estação)
-- Hex sempre em formato #rrggbb (6 dígitos)
-- Cores tecnicamente coerentes com a estação diagnosticada
+- cartela_ideal: EXATAMENTE 12 cores, nomes em MAIÚSCULAS (1-2 palavras), hex preciso
+- cores_valorizam: EXATAMENTE 8 cores coerentes com a estação
+- cores_apagam: EXATAMENTE 8 cores que tecnicamente prejudicam
+- metais: 2 a 4 opções (ex: Ouro Amarelo Luminoso, Ouro Rosé Quente, Champagne Dourado)
+- tons_cabelo: EXATAMENTE 4 tons com hex realistas de cabelo humano
+- reflexos: 1 a 3 opções de reflexos/mechas
+- maquiagem.blush: 2 opções; maquiagem.batom: 2 opções; maquiagem.sombras: 2 opções
+- neutros: EXATAMENTE 8 neutros variados (quentes/frios conforme a estação)
+- Hex sempre #rrggbb (6 dígitos)
 
-PROIBIDO:
-- Repetir a mesma análise para pessoas diferentes
-- Usar nomes de cor genéricos ("Cor 1", "Tom 2") — sempre nomes descritivos (ex: Salmão, Verde Musgo, Bordô Vinho)
-- Frases vazias ou clichês de autoajuda
-- Texto fora do JSON`;
+PROIBIDO: nomes genéricos ("Cor 1"), clichês de autoajuda, texto fora do JSON.`;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4o',
       response_format: { type: 'json_object' },
       messages: [
         {
@@ -235,34 +211,34 @@ PROIBIDO:
       const jsonStr = content.replace(/```json/g, '').replace(/```/g, '').trim();
       const aiData = JSON.parse(jsonStr);
 
-      // Use AI data directly with sensible fallbacks
+      // Map AI response to the canonical colorimetria schema
       resultData = {
         colorimetria: {
-          estacaoCromatica: aiData.estacao || 'OUTONO QUENTE',
-          estacaoCromaticaSub: aiData.subEstacao || '',
-          descricaoEstacao: aiData.descricao || 'Sua beleza em harmonia com cores naturais',
-          subtom: aiData.subtom || { titulo: 'Quente', desc: 'Tom natural' },
-          contraste: aiData.contraste || { titulo: 'Médio', desc: 'Equilíbrio harmônico' },
-          profundidade: aiData.profundidade || { titulo: 'Média', desc: 'Profundidade natural' },
-          intensidade: aiData.intensidade || { titulo: 'Suave', desc: 'Naturalidade' },
-          formatoRosto: aiData.formatoRosto || { titulo: 'Oval', desc: 'Equilíbrio facial' },
-          impressaoVisual: aiData.impressaoVisual || 'Natural e harmoniosa',
-          suaForca: aiData.suaForca || { titulo: 'BELEZA NATURAL', textoPrincipal: 'Harmonia e elegância', textoSecundario: 'Sua naturalidade brilha' },
-          cartelaIdeal: aiData.cartelaIdeal || [],
-          coresValorizam: aiData.coresValorizam || { desc: '', cores: [] },
-          coresApagam: aiData.coresApagam || { desc: '', cores: [] },
-          metaisIdeais: aiData.metaisIdeais || [],
-          dicaMetais: aiData.dicaMetais || 'Metais que realçam seu brilho',
-          melhoresTonsCabelo: aiData.melhoresTonsCabelo || [],
-          dicaCabelo: aiData.dicaCabelo || 'Tons que harmonizam',
-          maquiagemIdeal: aiData.maquiagemIdeal || {
-            base: { hex: '#e5c298', desc: 'Tom natural' },
-            blush: { hex: '#ffbfa3', desc: 'Rose suave' },
-            batom: { hex: '#c87669', desc: 'Tom harmonizado' },
-            sombras: { hex: '#b87333', desc: 'Profundidade' }
+          estacao:        aiData.estacao        || 'OUTONO QUENTE',
+          subtipo:        aiData.subtipo        || '',
+          frase_principal: aiData.frase_principal || 'Cores que celebram sua essência natural.',
+          subtom:         aiData.subtom         || 'Quente — tom natural',
+          contraste:      aiData.contraste      || 'Médio',
+          profundidade:   aiData.profundidade   || 'Média',
+          intensidade:    aiData.intensidade    || 'Suave',
+          formato_rosto:  aiData.formato_rosto  || 'Oval',
+          impressao_visual: aiData.impressao_visual || 'Harmoniosa e natural.',
+          cartela_ideal:  aiData.cartela_ideal  || [],
+          cores_valorizam: aiData.cores_valorizam || [],
+          cores_apagam:   aiData.cores_apagam   || [],
+          metais:         aiData.metais         || [],
+          tons_cabelo:    aiData.tons_cabelo     || [],
+          reflexos:       aiData.reflexos       || [],
+          maquiagem:      aiData.maquiagem      || {
+            base:    { nome: 'BEGE NEUTRO', hex: '#e5c298' },
+            blush:   [{ nome: 'PÊSSEGO', hex: '#ffbfa3' }],
+            batom:   [{ nome: 'NUDE', hex: '#c87669' }],
+            sombras: [{ nome: 'CHAMPAGNE', hex: '#f5e6c8' }],
+            acabamento: 'cetim',
           },
-          neutrosIdeais: aiData.neutrosIdeais || [],
-          mensagemFinal: aiData.mensagemFinal || 'Quando você usa as cores certas, sua beleza aparece com mais leveza, confiança e naturalidade.'
+          neutros:        aiData.neutros        || [],
+          forca_visual:   aiData.forca_visual   || 'Beleza natural e autenticidade.',
+          mensagem_final: aiData.mensagem_final || 'Quando você usa as cores certas, sua beleza se revela com confiança.',
         }
       };
 

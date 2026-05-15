@@ -1,299 +1,622 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { Download, FileText } from 'lucide-react';
 
+const CANVAS_W = 1080;
+const CANVAS_H = 1350;
+
+// ── Design tokens ─────────────────────────────────────────────
+const T = {
+  bgMain:   '#0c0a08',
+  bgCard:   '#151210',
+  bgCard2:  '#0f0d0b',
+  gold:     '#c9a96e',
+  goldLt:   '#f3e5ab',
+  goldDk:   '#7a5c28',
+  white:    '#f5f1e8',
+  muted:    '#8a7868',
+  border:   'rgba(201,169,110,0.30)',
+  borderBt: 'rgba(201,169,110,0.60)',
+  serif:    "'Cormorant Garamond','Playfair Display',serif",
+  cinzel:   "'Cinzel',serif",
+  sans:     "'Inter',sans-serif",
+  script:   "'Great Vibes','Dancing Script',cursive",
+};
+
+// ── Tiny helper components ────────────────────────────────────
+const GoldLine = ({ style = {} }) => (
+  <div style={{
+    height: 1, background: `linear-gradient(90deg,transparent,${T.gold},transparent)`,
+    opacity: 0.6, ...style
+  }} />
+);
+
+const GoldLineSolid = ({ style = {} }) => (
+  <div style={{
+    height: 1, background: T.border, ...style
+  }} />
+);
+
+const Star = () => (
+  <svg width="10" height="10" viewBox="0 0 24 24" fill={T.gold}>
+    <path d="M12 2L13.8 9.2L21 10L14.5 16L16.5 23L12 19.5L7.5 23L9.5 16L3 10L10.2 9.2Z"/>
+  </svg>
+);
+
+const DiamondOrnament = () => (
+  <svg width="10" height="10" viewBox="0 0 24 24" fill={T.gold}>
+    <path d="M12 2L22 12L12 22L2 12Z"/>
+  </svg>
+);
+
+const SectionLabel = ({ children, style = {} }) => (
+  <p style={{
+    fontFamily: T.cinzel, fontSize: 8.5, letterSpacing: '0.45em',
+    color: T.gold, textTransform: 'uppercase', margin: 0, lineHeight: 1,
+    ...style
+  }}>{children}</p>
+);
+
+const CardBorder = ({ children, style = {}, innerStyle = {} }) => (
+  <div style={{
+    border: `1px solid ${T.border}`,
+    borderRadius: 2,
+    background: T.bgCard,
+    ...style
+  }}>
+    <div style={{ padding: '10px 12px', ...innerStyle }}>
+      {children}
+    </div>
+  </div>
+);
+
+const ColorSwatch = ({ hex, nome, showHex = true, size = 68 }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+    <div style={{
+      width: size, height: size, background: hex,
+      border: `1px solid ${T.border}`, borderRadius: 1,
+      boxShadow: `inset 0 0 0 1px rgba(255,255,255,0.06), 0 3px 8px rgba(0,0,0,0.5)`,
+    }} />
+    {nome && (
+      <p style={{
+        fontFamily: T.cinzel, fontSize: 7, letterSpacing: '0.12em',
+        color: T.white, textTransform: 'uppercase', margin: 0, lineHeight: 1.15,
+        textAlign: 'center', maxWidth: size
+      }}>{nome}</p>
+    )}
+    {showHex && (
+      <p style={{
+        fontFamily: T.sans, fontSize: 7, color: T.muted,
+        margin: 0, letterSpacing: '0.06em', lineHeight: 1
+      }}>{hex}</p>
+    )}
+  </div>
+);
+
+const SmallSwatch = ({ hex, size = 48 }) => (
+  <div style={{
+    width: size, height: size, background: hex,
+    border: `1px solid ${T.border}`, borderRadius: 1,
+    boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+    flexShrink: 0,
+  }} />
+);
+
+const MetalDisc = ({ hex, nome }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+    <div style={{
+      width: 48, height: 48, borderRadius: '50%',
+      background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.55) 0%, ${hex} 30%, ${hex} 65%, rgba(0,0,0,0.35) 100%)`,
+      border: `1.5px solid ${T.borderBt}`,
+      boxShadow: `0 4px 10px rgba(0,0,0,0.5), inset 0 1px 3px rgba(255,255,255,0.3)`,
+    }} />
+    <p style={{
+      fontFamily: T.cinzel, fontSize: 6.5, letterSpacing: '0.12em',
+      color: T.goldLt, textTransform: 'uppercase', margin: 0,
+      lineHeight: 1.2, textAlign: 'center', maxWidth: 58
+    }}>{nome}</p>
+  </div>
+);
+
+const HairSwatch = ({ hex, nome }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
+    <div style={{
+      width: '100%', height: 72, borderRadius: '50% 50% 4px 4px / 8px 8px 4px 4px',
+      background: `linear-gradient(180deg, rgba(255,255,255,0.1) 0%, ${hex} 15%, ${hex} 70%, rgba(0,0,0,0.4) 100%)`,
+      border: `1px solid ${T.border}`,
+      boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+      overflow: 'hidden',
+    }}>
+      <div style={{
+        width: '30%', height: '100%', marginLeft: '15%',
+        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)',
+      }} />
+    </div>
+    <p style={{
+      fontFamily: T.cinzel, fontSize: 6.5, letterSpacing: '0.1em',
+      color: T.white, textTransform: 'uppercase', margin: 0,
+      lineHeight: 1.2, textAlign: 'center'
+    }}>{nome}</p>
+  </div>
+);
+
+const MakeupDot = ({ hex, size = 14 }) => (
+  <div style={{
+    width: size, height: size, borderRadius: '50%', background: hex,
+    border: `1px solid ${T.border}`, flexShrink: 0,
+    boxShadow: `inset 0 -1px 3px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)`,
+  }} />
+);
+
+// ── Main Component ─────────────────────────────────────────────
 const ResultInfographic = ({ data, image }) => {
-  const printRef = useRef();
+  const wrapperRef = useRef();
+  const canvasRef = useRef();
+  const [scale, setScale] = useState(0.5);
 
-  const handleDownloadImage = async () => {
-    const element = printRef.current;
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#f5ebdb' });
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-    const link = document.createElement('a');
-    link.download = 'visage-consultoria.jpg';
-    link.href = dataUrl;
-    link.click();
-  };
+  useEffect(() => {
+    const update = () => {
+      if (!wrapperRef.current) return;
+      const avail = wrapperRef.current.clientWidth;
+      setScale(Math.min(1, avail / CANVAS_W));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    if (wrapperRef.current) ro.observe(wrapperRef.current);
+    return () => ro.disconnect();
+  }, []);
 
-  const handleDownloadPDF = async () => {
-    const element = printRef.current;
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#f5ebdb' });
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const pdf = new jsPDF({
-      orientation: canvas.width > canvas.height ? 'l' : 'p',
-      unit: 'px',
-      format: [canvas.width, canvas.height]
+  const exportJpeg = async () => {
+    const el = canvasRef.current;
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      width: CANVAS_W,
+      height: CANVAS_H,
+      backgroundColor: T.bgMain,
+      scrollX: 0,
+      scrollY: -window.scrollY,
     });
-    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
-    pdf.save('visage-consultoria.pdf');
+    const url = canvas.toDataURL('image/jpeg', 0.95);
+    const a = document.createElement('a');
+    a.download = 'visage-colorimetria.jpg';
+    a.href = url;
+    a.click();
   };
 
-  if (!data || !data.colorimetria) {
+  const exportPdf = async () => {
+    const el = canvasRef.current;
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      width: CANVAS_W,
+      height: CANVAS_H,
+      backgroundColor: T.bgMain,
+      scrollX: 0,
+      scrollY: -window.scrollY,
+    });
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const pdf = new jsPDF({ orientation: 'p', unit: 'px', format: [CANVAS_W, CANVAS_H] });
+    pdf.addImage(imgData, 'JPEG', 0, 0, CANVAS_W, CANVAS_H);
+    pdf.save('visage-colorimetria.pdf');
+  };
+
+  // Support both old and new data shapes
+  const raw = data?.colorimetria || data || {};
+  const c = {
+    estacao:       raw.estacao        || raw.estacaoCromatica        || '',
+    subtipo:       raw.subtipo        || raw.estacaoCromaticaSub     || '',
+    frase:         raw.frase_principal || raw.descricaoEstacao        || '',
+    subtom:        typeof raw.subtom === 'string' ? raw.subtom : raw.subtom?.titulo || '',
+    contraste:     typeof raw.contraste === 'string' ? raw.contraste : raw.contraste?.titulo || '',
+    profundidade:  typeof raw.profundidade === 'string' ? raw.profundidade : raw.profundidade?.titulo || '',
+    intensidade:   typeof raw.intensidade === 'string' ? raw.intensidade : raw.intensidade?.titulo || '',
+    formatoRosto:  typeof raw.formato_rosto === 'string' ? raw.formato_rosto : (raw.formatoRosto?.titulo || raw.formato_rosto || ''),
+    impressao:     raw.impressao_visual  || raw.impressaoVisual || '',
+    cartela:       raw.cartela_ideal    || raw.cartelaIdeal     || [],
+    valorizam:     raw.cores_valorizam  || raw.coresValorizam?.cores || [],
+    apagam:        raw.cores_apagam     || raw.coresApagam?.cores    || [],
+    metais:        raw.metais           || raw.metaisIdeais           || [],
+    cabelo:        raw.tons_cabelo      || raw.melhoresTonsCabelo     || [],
+    reflexos:      raw.reflexos         || [],
+    maquiagem:     raw.maquiagem        || raw.maquiagemIdeal         || {},
+    neutros:       raw.neutros          || raw.neutrosIdeais          || [],
+    forca:         raw.forca_visual     || raw.suaForca?.titulo       || '',
+    mensagem:      raw.mensagem_final   || '',
+  };
+
+  if (!c.estacao) {
     return (
-      <div style={{ textAlign: 'center', padding: '3rem', color: '#8b6244' }}>
-        <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Aguardando análise...</p>
+      <div style={{ textAlign: 'center', padding: '3rem', color: T.muted }}>
+        <p>Aguardando análise...</p>
       </div>
     );
   }
 
-  const { colorimetria: c } = data;
+  // Normalize old makeup format
+  const maqBase   = c.maquiagem?.base?.hex   || c.maquiagem?.base   || '#e5c298';
+  const maqBlush  = Array.isArray(c.maquiagem?.blush)
+    ? c.maquiagem.blush : [{ hex: c.maquiagem?.blush?.hex || '#f4b8a0', nome: c.maquiagem?.blush?.desc || 'Blush' }];
+  const maqBatom  = Array.isArray(c.maquiagem?.batom)
+    ? c.maquiagem.batom : [{ hex: c.maquiagem?.batom?.hex || '#c87669', nome: c.maquiagem?.batom?.desc || 'Batom' }];
+  const maqSombra = Array.isArray(c.maquiagem?.sombras)
+    ? c.maquiagem.sombras : [{ hex: c.maquiagem?.sombras?.hex || '#b87333', nome: c.maquiagem?.sombras?.desc || 'Sombra' }];
+  const maqBaseHex = typeof maqBase === 'object' ? maqBase.hex : maqBase;
 
-  // Decorative divider with center ornament
-  const Divider = () => (
-    <div className="ed-divider">
-      <span className="ed-divider-line"></span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2L14 10L22 12L14 14L12 22L10 14L2 12L10 10L12 2Z" fill="#9a6a4a" />
-      </svg>
-      <span className="ed-divider-line"></span>
-    </div>
-  );
+  // Limit arrays
+  const cartela12 = c.cartela.slice(0, 12);
+  const val8 = c.valorizam.slice(0, 8);
+  const apa8 = c.apagam.slice(0, 8);
+  const metais4 = c.metais.slice(0, 4);
+  const cabelo4 = c.cabelo.slice(0, 4);
+  const neutros8 = c.neutros.slice(0, 8);
 
-  // Botanical SVG for footer
-  const Botanical = () => (
-    <svg width="60" height="50" viewBox="0 0 60 50" fill="none">
-      <path d="M30 45 Q20 30 12 18" stroke="#9a6a4a" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-      <path d="M30 45 Q40 30 48 18" stroke="#9a6a4a" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-      <ellipse cx="15" cy="25" rx="3" ry="6" transform="rotate(-25 15 25)" fill="#b88460" opacity="0.7" />
-      <ellipse cx="22" cy="33" rx="2.5" ry="5" transform="rotate(-15 22 33)" fill="#c89978" opacity="0.6" />
-      <ellipse cx="45" cy="25" rx="3" ry="6" transform="rotate(25 45 25)" fill="#b88460" opacity="0.7" />
-      <ellipse cx="38" cy="33" rx="2.5" ry="5" transform="rotate(15 38 33)" fill="#c89978" opacity="0.6" />
-      <circle cx="30" cy="12" r="2.5" fill="#9a6a4a" />
-    </svg>
-  );
+  // ── Canvas content ──────────────────────────────────────────
+  const PAD = 26;
+  const INNER_W = CANVAS_W - PAD * 2; // 1028
 
   return (
     <div className="ed-wrapper">
-      <div className="export-actions">
-        <button onClick={handleDownloadImage} className="btn btn-primary">
-          <Download size={18} /> Salvar Imagem
+      <div className="export-actions" style={{ marginBottom: '1.5rem' }}>
+        <button onClick={exportJpeg} className="btn btn-primary" style={{ width: 'auto' }}>
+          <Download size={16} /> Salvar JPEG
         </button>
-        <button onClick={handleDownloadPDF} className="btn btn-outline">
-          <FileText size={18} /> Baixar PDF
+        <button onClick={exportPdf} className="btn btn-outline">
+          <FileText size={16} /> Baixar PDF
         </button>
       </div>
 
-      <div className="ed-poster" ref={printRef}>
-        {/* ======= HERO HEADER ======= */}
-        <header className="ed-header">
-          <p className="ed-brand">V I S A G Ê</p>
-          <p className="ed-tagline">CONSULTORIA DE IMAGEM PERSONALIZADA</p>
-          <Divider />
-          <p className="ed-eyebrow">SUA COLORIMETRIA PESSOAL</p>
-          <h1 className="ed-season">{c.estacaoCromatica}</h1>
-          {c.estacaoCromaticaSub && (
-            <p className="ed-subseason">{c.estacaoCromaticaSub}</p>
-          )}
-          <p className="ed-description">"{c.descricaoEstacao}"</p>
-        </header>
+      {/* Scaler wrapper */}
+      <div ref={wrapperRef} style={{ width: '100%' }}>
+        <div style={{
+          width: CANVAS_W * scale,
+          height: CANVAS_H * scale,
+          overflow: 'hidden',
+          margin: '0 auto',
+        }}>
+          {/* ── THE ACTUAL 1080×1350 CANVAS ── */}
+          <div
+            ref={canvasRef}
+            style={{
+              width: CANVAS_W, height: CANVAS_H,
+              transformOrigin: 'top left',
+              transform: `scale(${scale})`,
+              background: T.bgMain,
+              fontFamily: T.sans,
+              color: T.white,
+              overflow: 'hidden',
+              position: 'relative',
+              boxSizing: 'border-box',
+            }}
+          >
+            {/* Outer frame */}
+            <div style={{
+              position: 'absolute', inset: 10,
+              border: `1px solid ${T.border}`,
+              pointerEvents: 'none',
+              zIndex: 1,
+            }} />
 
-        {/* ======= PHOTO + DIAGNOSIS GRID ======= */}
-        <section className="ed-hero-section">
-          <div className="ed-photo-frame">
-            <div className="ed-photo-inner">
-              <img src={image} alt="Cliente" />
-            </div>
-            <div className="ed-photo-label">
-              <p className="ed-photo-label-eyebrow">ANÁLISE EXCLUSIVA</p>
-              <p className="ed-photo-label-text">{c.impressaoVisual}</p>
-            </div>
-          </div>
+            {/* Main content area */}
+            <div style={{
+              position: 'relative', zIndex: 2,
+              padding: `${PAD}px ${PAD}px`,
+              display: 'flex', flexDirection: 'column',
+              height: '100%', boxSizing: 'border-box',
+              gap: 0,
+            }}>
 
-          <div className="ed-diagnosis-grid">
-            <div className="ed-diag-card">
-              <p className="ed-diag-label">SUBTOM DA PELE</p>
-              <p className="ed-diag-value">{c.subtom?.titulo}</p>
-              <p className="ed-diag-desc">{c.subtom?.desc}</p>
-            </div>
-            <div className="ed-diag-card">
-              <p className="ed-diag-label">CONTRASTE</p>
-              <p className="ed-diag-value">{c.contraste?.titulo}</p>
-              <p className="ed-diag-desc">{c.contraste?.desc}</p>
-            </div>
-            <div className="ed-diag-card">
-              <p className="ed-diag-label">PROFUNDIDADE</p>
-              <p className="ed-diag-value">{c.profundidade?.titulo}</p>
-              <p className="ed-diag-desc">{c.profundidade?.desc}</p>
-            </div>
-            <div className="ed-diag-card">
-              <p className="ed-diag-label">INTENSIDADE</p>
-              <p className="ed-diag-value">{c.intensidade?.titulo}</p>
-              <p className="ed-diag-desc">{c.intensidade?.desc}</p>
-            </div>
-            <div className="ed-diag-card">
-              <p className="ed-diag-label">FORMATO DO ROSTO</p>
-              <p className="ed-diag-value">{c.formatoRosto?.titulo}</p>
-              <p className="ed-diag-desc">{c.formatoRosto?.desc}</p>
-            </div>
-            <div className="ed-diag-card ed-diag-strength">
-              <p className="ed-diag-label">SUA FORÇA</p>
-              <p className="ed-diag-value ed-diag-strength-value">{c.suaForca?.titulo}</p>
-              <p className="ed-diag-desc">{c.suaForca?.textoPrincipal}</p>
-            </div>
-          </div>
-        </section>
+              {/* ═══ HEADER ═══════════════════════════════════ */}
+              <div style={{ textAlign: 'center', flexShrink: 0 }}>
+                {/* Top ornament */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg,transparent,${T.borderBt})` }} />
+                  <Star /><DiamondOrnament /><Star />
+                  <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg,${T.borderBt},transparent)` }} />
+                </div>
 
-        {/* ======= CARTELA IDEAL ======= */}
-        <section className="ed-section">
-          <div className="ed-section-header">
-            <p className="ed-section-num">01</p>
-            <h2 className="ed-section-title">SUA CARTELA IDEAL</h2>
-            <p className="ed-section-subtitle">As 12 cores que potencializam sua beleza natural</p>
-          </div>
-          <div className="ed-cartela-grid">
-            {c.cartelaIdeal?.slice(0, 12).map((color, i) => (
-              <div key={i} className="ed-swatch">
-                <div className="ed-swatch-color" style={{ background: color.hex }}></div>
-                <p className="ed-swatch-name">{color.nome}</p>
-                <p className="ed-swatch-hex">{color.hex}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+                <p style={{
+                  fontFamily: T.cinzel, fontSize: 11, letterSpacing: '0.55em',
+                  color: T.gold, textTransform: 'uppercase', margin: '0 0 4px',
+                  paddingLeft: '0.55em', lineHeight: 1,
+                }}>SUA COLORIMETRIA PESSOAL</p>
 
-        {/* ======= VALORIZAM vs APAGAM ======= */}
-        <section className="ed-section">
-          <div className="ed-section-header">
-            <p className="ed-section-num">02</p>
-            <h2 className="ed-section-title">O QUE USAR E O QUE EVITAR</h2>
-          </div>
-          <div className="ed-compare-grid">
-            <div className="ed-compare-card ed-compare-yes">
-              <div className="ed-compare-header">
-                <span className="ed-compare-tag ed-tag-yes">USE</span>
-                <h3 className="ed-compare-title">CORES QUE TE VALORIZAM</h3>
-              </div>
-              <p className="ed-compare-desc">{c.coresValorizam?.desc}</p>
-              <div className="ed-mini-grid">
-                {c.coresValorizam?.cores?.slice(0, 10).map((color, i) => (
-                  <div key={i} className="ed-mini-swatch" style={{ background: color.hex }} title={color.nome}></div>
-                ))}
-              </div>
-            </div>
-            <div className="ed-compare-card ed-compare-no">
-              <div className="ed-compare-header">
-                <span className="ed-compare-tag ed-tag-no">EVITE</span>
-                <h3 className="ed-compare-title">CORES QUE TE APAGAM</h3>
-              </div>
-              <p className="ed-compare-desc">{c.coresApagam?.desc}</p>
-              <div className="ed-mini-grid">
-                {c.coresApagam?.cores?.slice(0, 10).map((color, i) => (
-                  <div key={i} className="ed-mini-swatch" style={{ background: color.hex }} title={color.nome}></div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+                <GoldLine style={{ maxWidth: 400, margin: '6px auto' }} />
 
-        {/* ======= METAIS + CABELO + MAQUIAGEM ======= */}
-        <section className="ed-section">
-          <div className="ed-section-header">
-            <p className="ed-section-num">03</p>
-            <h2 className="ed-section-title">SEU GUIA DE ESTILO</h2>
-          </div>
-          <div className="ed-style-grid">
-            {/* METAIS */}
-            <div className="ed-style-card">
-              <p className="ed-style-eyebrow">ACABAMENTOS</p>
-              <h4 className="ed-style-title">METAIS IDEAIS</h4>
-              <p className="ed-style-desc">{c.dicaMetais}</p>
-              <div className="ed-metal-row">
-                {c.metaisIdeais?.slice(0, 4).map((m, i) => (
-                  <div key={i} className="ed-metal">
-                    <div className="ed-metal-disc" style={{
-                      background: `radial-gradient(circle at 35% 30%, #fff7e6 0%, ${m.hex} 40%, ${m.hex} 70%, rgba(0,0,0,0.25) 100%)`
-                    }}></div>
-                    <p className="ed-metal-name">{m.nome}</p>
+                {/* Season */}
+                <p style={{
+                  fontFamily: T.serif, fontSize: 52, fontWeight: 600,
+                  color: T.goldLt, letterSpacing: '0.04em', lineHeight: 1.05,
+                  margin: '2px 0',
+                  textShadow: `0 0 40px rgba(201,169,110,0.3)`,
+                  textTransform: 'uppercase',
+                }}>{c.estacao}</p>
+
+                {c.subtipo && (
+                  <p style={{
+                    fontFamily: T.serif, fontStyle: 'italic', fontSize: 13,
+                    color: T.gold, letterSpacing: '0.08em', margin: '2px 0 4px',
+                  }}>{c.subtipo}</p>
+                )}
+
+                {/* Frase */}
+                <p style={{
+                  fontFamily: T.serif, fontStyle: 'italic', fontSize: 13,
+                  color: T.muted, letterSpacing: '0.04em',
+                  margin: '4px 0 8px',
+                  maxWidth: 640, marginLeft: 'auto', marginRight: 'auto',
+                }}>"{c.frase}"</p>
+
+                <GoldLine style={{ margin: '0 auto', maxWidth: 600 }} />
+              </div>
+
+              {/* ═══ MAIN ROW: PHOTO + CARTELA + ANÁLISE ══════ */}
+              <div style={{
+                display: 'flex', gap: 12, marginTop: 14, flexShrink: 0,
+              }}>
+                {/* PHOTO */}
+                <div style={{ width: 296, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{
+                    width: '100%', height: 268,
+                    border: `1.5px solid ${T.borderBt}`,
+                    borderRadius: 2, overflow: 'hidden',
+                    boxShadow: `0 0 24px rgba(201,169,110,0.12), inset 0 0 0 4px rgba(201,169,110,0.06)`,
+                    position: 'relative',
+                  }}>
+                    {image && <img src={image} alt="Rosto" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
+                    {/* Inner frame */}
+                    <div style={{ position: 'absolute', inset: 8, border: `1px solid ${T.border}`, pointerEvents: 'none' }} />
+                  </div>
+
+                  {/* Impressão visual under photo */}
+                  <div style={{
+                    border: `1px solid ${T.border}`, borderRadius: 2,
+                    background: T.bgCard, padding: '8px 10px',
+                  }}>
+                    <SectionLabel style={{ marginBottom: 4 }}>IMPRESSÃO VISUAL</SectionLabel>
+                    <p style={{
+                      fontFamily: T.serif, fontStyle: 'italic', fontSize: 10.5,
+                      color: T.white, lineHeight: 1.45, margin: 0,
+                    }}>{c.impressao}</p>
+                  </div>
+                </div>
+
+                {/* RIGHT COLUMN: CARTELA + ANÁLISE */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+                  {/* CARTELA IDEAL */}
+                  <div style={{ border: `1px solid ${T.border}`, borderRadius: 2, background: T.bgCard, padding: '10px 12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <GoldLineSolid style={{ flex: 1 }} />
+                      <SectionLabel>SUA CARTELA IDEAL</SectionLabel>
+                      <GoldLineSolid style={{ flex: 1 }} />
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 6 }}>
+                      {cartela12.map((cor, i) => (
+                        <ColorSwatch key={i} hex={cor.hex} nome={cor.nome} showHex={true} size={106} />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* SUA ANÁLISE */}
+                  <div style={{ border: `1px solid ${T.border}`, borderRadius: 2, background: T.bgCard, padding: '10px 12px', flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <GoldLineSolid style={{ flex: 1 }} />
+                      <SectionLabel>SUA ANÁLISE</SectionLabel>
+                      <GoldLineSolid style={{ flex: 1 }} />
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 10px' }}>
+                      {[
+                        { label: 'SUBTOM DA PELE', value: c.subtom },
+                        { label: 'CONTRASTE', value: c.contraste },
+                        { label: 'PROFUNDIDADE', value: c.profundidade },
+                        { label: 'INTENSIDADE', value: c.intensidade },
+                        { label: 'FORMATO DO ROSTO', value: c.formatoRosto },
+                      ].map((item, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                          <div style={{
+                            width: 5, height: 5, borderRadius: '50%',
+                            background: T.gold, flexShrink: 0, marginTop: 4,
+                          }} />
+                          <div>
+                            <p style={{
+                              fontFamily: T.cinzel, fontSize: 7, letterSpacing: '0.3em',
+                              color: T.gold, margin: '0 0 1px', textTransform: 'uppercase',
+                            }}>{item.label}</p>
+                            <p style={{
+                              fontFamily: T.serif, fontSize: 11, color: T.white,
+                              margin: 0, lineHeight: 1.3,
+                            }}>{item.value}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ═══ COLORS ROW ════════════════════════════════ */}
+              <div style={{ display: 'flex', gap: 10, marginTop: 10, flexShrink: 0 }}>
+                {[
+                  { label: 'CORES QUE TE VALORIZAM', sub: 'Harmoniosas com sua beleza natural', colors: val8, accent: T.gold },
+                  { label: 'CORES QUE TE APAGAM', sub: 'Evite para não apagar sua luminosidade', colors: apa8, accent: '#a04040' },
+                ].map((col, ci) => (
+                  <div key={ci} style={{
+                    flex: 1, border: `1px solid ${ci === 0 ? T.border : 'rgba(160,64,64,0.35)'}`,
+                    borderRadius: 2, background: T.bgCard, padding: '8px 10px',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                      <div style={{ width: 8, height: 8, background: col.accent, borderRadius: 1 }} />
+                      <p style={{
+                        fontFamily: T.cinzel, fontSize: 8.5, letterSpacing: '0.3em',
+                        color: col.accent, textTransform: 'uppercase', margin: 0,
+                      }}>{col.label}</p>
+                    </div>
+                    <p style={{
+                      fontFamily: T.serif, fontStyle: 'italic', fontSize: 10,
+                      color: T.muted, margin: '0 0 6px', lineHeight: 1.3,
+                    }}>{col.sub}</p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 5 }}>
+                      {col.colors.map((cor, i) => (
+                        <ColorSwatch key={i} hex={cor.hex} nome={cor.nome} showHex={false} size={52} />
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* CABELO */}
-            <div className="ed-style-card">
-              <p className="ed-style-eyebrow">CAPILAR</p>
-              <h4 className="ed-style-title">TONS DE CABELO</h4>
-              <p className="ed-style-desc">{c.dicaCabelo}</p>
-              <div className="ed-hair-row">
-                {c.melhoresTonsCabelo?.slice(0, 4).map((h, i) => (
-                  <div key={i} className="ed-hair">
-                    <div className="ed-hair-strand" style={{
-                      background: `linear-gradient(180deg, ${h.hex} 0%, ${h.hex} 40%, rgba(0,0,0,0.25) 100%)`
-                    }}></div>
-                    <p className="ed-hair-name">{h.nome}</p>
+              {/* ═══ STYLE GUIDE: METAIS + CABELO + MAQUIAGEM ═ */}
+              <div style={{ display: 'flex', gap: 10, marginTop: 10, flexShrink: 0 }}>
+
+                {/* METAIS */}
+                <div style={{
+                  flex: 1, border: `1px solid ${T.border}`, borderRadius: 2,
+                  background: T.bgCard, padding: '8px 10px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                    <GoldLineSolid style={{ flex: 1 }} />
+                    <SectionLabel>METAIS IDEAIS</SectionLabel>
+                    <GoldLineSolid style={{ flex: 1 }} />
                   </div>
-                ))}
+                  <div style={{ display: 'flex', gap: 8, justifyContent: 'space-around', flexWrap: 'wrap' }}>
+                    {metais4.map((m, i) => (
+                      <MetalDisc key={i} hex={m.hex} nome={m.nome} />
+                    ))}
+                  </div>
+                </div>
+
+                {/* CABELO */}
+                <div style={{
+                  flex: 1.2, border: `1px solid ${T.border}`, borderRadius: 2,
+                  background: T.bgCard, padding: '8px 10px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                    <GoldLineSolid style={{ flex: 1 }} />
+                    <SectionLabel>MELHORES TONS DE CABELO</SectionLabel>
+                    <GoldLineSolid style={{ flex: 1 }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    {cabelo4.map((h, i) => (
+                      <HairSwatch key={i} hex={h.hex} nome={h.nome} />
+                    ))}
+                  </div>
+                  {c.reflexos.length > 0 && (
+                    <div style={{ marginTop: 6 }}>
+                      <p style={{
+                        fontFamily: T.cinzel, fontSize: 7, letterSpacing: '0.3em',
+                        color: T.muted, textTransform: 'uppercase', margin: '0 0 4px',
+                      }}>REFLEXOS</p>
+                      <div style={{ display: 'flex', gap: 5 }}>
+                        {c.reflexos.slice(0, 3).map((r, i) => (
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <div style={{ width: 18, height: 6, background: r.hex, borderRadius: 10, border: `1px solid ${T.border}` }} />
+                            <p style={{ fontFamily: T.sans, fontSize: 7.5, color: T.muted, margin: 0 }}>{r.nome}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* MAQUIAGEM */}
+                <div style={{
+                  flex: 1.1, border: `1px solid ${T.border}`, borderRadius: 2,
+                  background: T.bgCard, padding: '8px 10px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                    <GoldLineSolid style={{ flex: 1 }} />
+                    <SectionLabel>MAQUIAGEM IDEAL</SectionLabel>
+                    <GoldLineSolid style={{ flex: 1 }} />
+                  </div>
+                  {[
+                    { label: 'BASE',    dot: maqBaseHex,   items: [typeof c.maquiagem?.base === 'object' ? c.maquiagem.base : { nome: 'Base', hex: maqBaseHex }] },
+                    { label: 'BLUSH',   dot: maqBlush[0]?.hex,   items: maqBlush.slice(0,2) },
+                    { label: 'BATOM',   dot: maqBatom[0]?.hex,   items: maqBatom.slice(0,2) },
+                    { label: 'SOMBRAS', dot: maqSombra[0]?.hex,  items: maqSombra.slice(0,2) },
+                  ].map((row, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                      <p style={{
+                        fontFamily: T.cinzel, fontSize: 7, letterSpacing: '0.3em',
+                        color: T.gold, textTransform: 'uppercase', margin: 0, width: 46, flexShrink: 0,
+                      }}>{row.label}</p>
+                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                        {row.items.map((item, j) => (
+                          <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                            <MakeupDot hex={item.hex || row.dot} size={12} />
+                            <p style={{ fontFamily: T.sans, fontSize: 8, color: T.muted, margin: 0 }}>
+                              {item.nome || item.desc || ''}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  {c.maquiagem?.acabamento && (
+                    <p style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 9, color: T.muted, margin: 0 }}>
+                      Acabamento: {c.maquiagem.acabamento}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* MAQUIAGEM */}
-            <div className="ed-style-card">
-              <p className="ed-style-eyebrow">BEAUTY</p>
-              <h4 className="ed-style-title">MAQUIAGEM IDEAL</h4>
-              <ul className="ed-makeup-list">
-                <li className="ed-makeup-item">
-                  <span className="ed-makeup-dot" style={{ background: c.maquiagemIdeal?.base?.hex }}></span>
-                  <div>
-                    <strong>BASE</strong>
-                    <span>{c.maquiagemIdeal?.base?.desc}</span>
-                  </div>
-                </li>
-                <li className="ed-makeup-item">
-                  <span className="ed-makeup-dot" style={{ background: c.maquiagemIdeal?.blush?.hex }}></span>
-                  <div>
-                    <strong>BLUSH</strong>
-                    <span>{c.maquiagemIdeal?.blush?.desc}</span>
-                  </div>
-                </li>
-                <li className="ed-makeup-item">
-                  <span className="ed-makeup-dot" style={{ background: c.maquiagemIdeal?.batom?.hex }}></span>
-                  <div>
-                    <strong>BATOM</strong>
-                    <span>{c.maquiagemIdeal?.batom?.desc}</span>
-                  </div>
-                </li>
-                <li className="ed-makeup-item">
-                  <span className="ed-makeup-dot" style={{ background: c.maquiagemIdeal?.sombras?.hex }}></span>
-                  <div>
-                    <strong>SOMBRAS</strong>
-                    <span>{c.maquiagemIdeal?.sombras?.desc}</span>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* ======= NEUTROS ======= */}
-        <section className="ed-section">
-          <div className="ed-section-header">
-            <p className="ed-section-num">04</p>
-            <h2 className="ed-section-title">NEUTROS IDEAIS</h2>
-            <p className="ed-section-subtitle">Sua base curinga para o dia a dia</p>
-          </div>
-          <div className="ed-neutros-grid">
-            {c.neutrosIdeais?.slice(0, 8).map((n, i) => (
-              <div key={i} className="ed-neutro">
-                <div className="ed-neutro-color" style={{ background: n.hex }}></div>
-                <p className="ed-neutro-name">{n.nome}</p>
+              {/* ═══ NEUTROS ═══════════════════════════════════ */}
+              <div style={{
+                border: `1px solid ${T.border}`, borderRadius: 2,
+                background: T.bgCard, padding: '8px 12px', marginTop: 10, flexShrink: 0,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <GoldLineSolid style={{ flex: 1 }} />
+                  <SectionLabel>NEUTROS IDEAIS</SectionLabel>
+                  <GoldLineSolid style={{ flex: 1 }} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8,1fr)', gap: 6 }}>
+                  {neutros8.map((n, i) => (
+                    <ColorSwatch key={i} hex={n.hex} nome={n.nome} showHex={false} size={90} />
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-        </section>
 
-        {/* ======= FOOTER ======= */}
-        <footer className="ed-footer">
-          <Botanical />
-          <p className="ed-footer-message">{c.mensagemFinal}</p>
-          <p className="ed-footer-tagline">
-            <em>Mais confiança, mais leveza, </em>
-            <strong>mais você.</strong>
-          </p>
-          <Divider />
-          <p className="ed-footer-signature">V I S A G Ê &nbsp;·&nbsp; CONSULTORIA DE IMAGEM</p>
-        </footer>
-      </div>
+              {/* ═══ FORÇA + MENSAGEM ══════════════════════════ */}
+              <div style={{ marginTop: 10, flexShrink: 0 }}>
+                <div style={{
+                  border: `1px solid ${T.borderBt}`, borderRadius: 2,
+                  background: `linear-gradient(135deg,rgba(201,169,110,0.08),rgba(201,169,110,0.03))`,
+                  padding: '10px 14px', marginBottom: 8,
+                }}>
+                  <SectionLabel style={{ marginBottom: 4 }}>SUA FORÇA</SectionLabel>
+                  <p style={{
+                    fontFamily: T.serif, fontSize: 12, color: T.white,
+                    margin: 0, lineHeight: 1.5,
+                  }}>{c.forca}</p>
+                </div>
+
+                <div style={{ textAlign: 'center' }}>
+                  <GoldLine style={{ marginBottom: 8 }} />
+                  <p style={{
+                    fontFamily: T.script, fontSize: 22,
+                    color: T.goldLt, margin: '0 auto',
+                    letterSpacing: '0.02em', lineHeight: 1.3,
+                    maxWidth: 700,
+                    textShadow: `0 0 20px rgba(243,229,171,0.2)`,
+                  }}>{c.mensagem}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', marginTop: 8 }}>
+                    <div style={{ flex: 1, maxWidth: 300, height: 1, background: `linear-gradient(90deg,transparent,${T.border})` }} />
+                    <DiamondOrnament />
+                    <p style={{
+                      fontFamily: T.cinzel, fontSize: 8, letterSpacing: '0.45em',
+                      color: T.gold, textTransform: 'uppercase', margin: 0, paddingLeft: '0.45em',
+                    }}>V I S A G Ê</p>
+                    <DiamondOrnament />
+                    <div style={{ flex: 1, maxWidth: 300, height: 1, background: `linear-gradient(90deg,${T.border},transparent)` }} />
+                  </div>
+                </div>
+              </div>
+
+            </div>{/* end content */}
+          </div>{/* end canvas */}
+        </div>{/* end overflow wrapper */}
+      </div>{/* end scaler wrapper */}
     </div>
   );
 };
